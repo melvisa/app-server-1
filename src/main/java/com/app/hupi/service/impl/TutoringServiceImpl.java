@@ -208,7 +208,9 @@ public class TutoringServiceImpl implements TutoringService {
 			String[] ss=s.split("_");
 			String tutoring_type=codeService.queryCodeValueByGroupAndValue("tutoring_type", "tutoring_type_"+ss[0]);
 			String sub=codeService.queryCodeValueByGroupAndValue("tutoring_type_"+ss[0], "tutoring_type_"+ss[0]+"_"+ss[1]);
-			list.add(tutoring_type+sub);
+			if(tutoring_type!=null&&sub!=null) {
+				list.add(tutoring_type.split(",")[0]+sub.split(",")[0]);
+			}
 		}
 		return list;
 	}
