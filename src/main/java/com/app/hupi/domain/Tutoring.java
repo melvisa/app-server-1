@@ -30,6 +30,9 @@ public class Tutoring {
 	private String eduExperience;
 	@ApiModelProperty("个人介绍")
 	private String introduce;
+	@ApiModelProperty("标签")
+	private String tags;
+	
 	@ApiModelProperty("家教身份")
 	private String tutoringIdentity;
 	@ApiModelProperty("教龄")

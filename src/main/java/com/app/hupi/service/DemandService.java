@@ -8,9 +8,9 @@ import com.app.hupi.vo.DemandListVO;
 
 public interface DemandService {
 
-	 Demand addDemand(DemandAddVO demandAddVO);
+	 Demand addDemand(String employerId,DemandAddVO demandAddVO);
 	 
-	 List<Demand> listDemandByEmployer(String employerId);
+	 List<Demand> listDemandByEmployer(String employerId,int pageNum,int pageSize);
 	 
 	 List<DemandListVO> listDemandByTutoring(String tutoringId,String lng,String lat,int pageNum,int pageSize);
 	 

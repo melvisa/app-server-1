@@ -6,5 +6,7 @@ import com.app.hupi.vo.UserVO;
 
 public interface AppointmentService {
 
-	Appointment addAppointment(UserVO userVO,AppointmentAddVO  appointmentAddVO);
+	Appointment addAppointment(String employerId,AppointmentAddVO appointmentAddVO);
+
+	Appointment queryAppointmentBy(String employerId,String tutoringId,String demandId);
 }

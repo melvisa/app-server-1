@@ -15,6 +15,7 @@ import com.app.hupi.util.DateUtil;
 import com.app.hupi.util.KiteUUID;
 import com.app.hupi.vo.AttentionListVO;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.github.pagehelper.PageHelper;
 
 @Service
 public class AttentionServiceImpl implements AttentionService {
@@ -44,7 +45,8 @@ public class AttentionServiceImpl implements AttentionService {
 	}
 
 	@Override
-	public List<AttentionListVO> listAttention(String employerId) {
+	public List<AttentionListVO> listAttention(String employerId,int pageNum,int pageSize) {
+		   PageHelper.startPage(pageNum, pageSize);
 		   EntityWrapper<Attention> wrapper=new EntityWrapper<Attention>();
 		   wrapper.eq("employer_id", employerId).orderBy("create_time desc");
 		   List<Attention> list=attentionMapper.selectList(wrapper);
@@ -62,6 +64,17 @@ public class AttentionServiceImpl implements AttentionService {
 	@Override
 	public int cancelAttention(String attentionId) {
 		return attentionMapper.deleteById(attentionId);
+	}
+
+	@Override
+	public Attention queryAttention(String employerId, String tutoringId) {
+		  EntityWrapper<Attention> wrapper=new EntityWrapper<Attention>();
+		  wrapper.eq("employer_id", employerId).eq("tutoring_id", tutoringId);
+		  List<Attention> list=attentionMapper.selectList(wrapper);
+		  if(list.size()>0) {
+			  return list.get(0);
+		  }
+		return null;
 	}
 
 }

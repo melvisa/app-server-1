@@ -9,7 +9,9 @@ public interface AttentionService {
 
 	Attention addAttention(String employerId,String tutoringId);
 	
-	List<AttentionListVO> listAttention(String employerId);
+	Attention queryAttention(String employerId,String tutoringId);
+	
+	List<AttentionListVO> listAttention(String employerId,int pageNum,int pageSize);
 	
 	int cancelAttention(String attentionId);
 }

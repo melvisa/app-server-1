@@ -1,6 +1,7 @@
 package com.app.hupi.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.app.hupi.constant.Constant;
+import com.app.hupi.domain.Attention;
 import com.app.hupi.domain.Demand;
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.domain.TutoringOrder;
@@ -17,6 +19,7 @@ import com.app.hupi.exception.KiteException;
 import com.app.hupi.mapper.DemandMapper;
 import com.app.hupi.mapper.TutoringMapper;
 import com.app.hupi.mapper.TutoringOrderMapper;
+import com.app.hupi.service.AttentionService;
 import com.app.hupi.service.CodeService;
 import com.app.hupi.service.TutoringService;
 import com.app.hupi.util.BeanUtil;
@@ -49,6 +52,8 @@ public class TutoringServiceImpl implements TutoringService {
 	private DemandMapper demandMapper;
 	@Autowired
 	private TutoringOrderMapper tutoringOrderMapper;
+	@Autowired
+	private AttentionService attentionService;
 	
 	/**
 	 * 投递简历
@@ -185,6 +190,8 @@ public class TutoringServiceImpl implements TutoringService {
 			vo.setTutoringIdentity(codeService.queryCodeValueByGroupAndValue("tutoring_identity", vo.getTutoringIdentity()));
 			result.add(vo);
 		}
+		// 个性标签  评价   是否关注  是否预约
+		
 		return result;
 	}
 	
@@ -215,7 +222,7 @@ public class TutoringServiceImpl implements TutoringService {
 		return list;
 	}
 	@Override
-	public TutoringDetailVO queryTutoringDetail(String id) {
+	public TutoringDetailVO queryTutoringDetail(String id,String employerId) {
 		Tutoring tutoring=tutoringMapper.selectById(id);
 		if(tutoring==null) {
 			return null;
@@ -236,6 +243,19 @@ public class TutoringServiceImpl implements TutoringService {
 			vo.setAuthInfo("已实名认证");
 		}
 		vo.setTutoringIdentity(codeService.queryCodeValueByGroupAndValue("tutoring_identity", tutoring.getTutoringIdentity()));
+		// 个性标签和评价字段，
+		// 是否关注
+		Attention attention=attentionService.queryAttention(employerId, tutoring.getId());
+		if(attention==null) {
+			vo.setAttentionTag("0");
+		}
+		else {
+			vo.setAttentionTag("1");
+		}
+		String tags=tutoring.getTags();
+		if(tags!=null) {
+			vo.setTags(Arrays.asList(tags.split(",")));
+		}
 		return vo;
 	}
 	@Override

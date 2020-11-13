@@ -23,7 +23,7 @@ public interface TutoringService {
 	
 	Tutoring register(TutoringRegisterVO tutoringRegisterVO);
 	
-	TutoringDetailVO queryTutoringDetail(String id);
+	TutoringDetailVO queryTutoringDetail(String id,String employerId);
 	
 	List<TutoringListVO> listTutoringList(String employerId,String tutoringType,String lng,String lat,int pageIndex,int pageSize);
 }

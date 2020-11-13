@@ -43,15 +43,11 @@ public class DemandServiceImpl  implements DemandService{
 	private  CodeService codeService;
 	
 	@Override
-	public Demand addDemand(DemandAddVO demandAddVO) {
-		UserVO vo=(UserVO) WebUtil.getSession().getAttribute("user");
-		if(vo==null) {
-			KiteException.throwException("请重新登录");
-		}
+	public Demand addDemand(String employerId,DemandAddVO demandAddVO) {
 		Demand demand=new Demand();
 		BeanUtil.copyProperties(demandAddVO, demand);
 		demand.setId(KiteUUID.getId());
-		demand.setEmployerId(vo.getId());
+		demand.setEmployerId(employerId);
 		demand.setCreateTime(DateUtil.getFormatedDateTime());
 		demand.setStatus("1");
 		LngAndLatVO lngAndLatVO=LngAndLatUtils.getLngAndLat(demand.getAddress());
@@ -61,7 +57,8 @@ public class DemandServiceImpl  implements DemandService{
 		return demand;
 	}
 	@Override
-	public List<Demand> listDemandByEmployer(String employerId) {
+	public List<Demand> listDemandByEmployer(String employerId,int pageNum,int pageSize) {
+		PageHelper.startPage(pageNum, pageSize);
 		EntityWrapper<Demand> wrapper=new EntityWrapper<Demand>();
 		wrapper.eq("employer_id", employerId);
 		return demandMapper.selectList(wrapper);

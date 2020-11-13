@@ -12,21 +12,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.hupi.constant.DataResult;
+import com.app.hupi.domain.Employer;
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.exception.KiteException;
 import com.app.hupi.mapper.TutoringOrderMapper;
+import com.app.hupi.service.EmployerService;
 import com.app.hupi.service.TutoringOrderService;
 import com.app.hupi.service.TutoringService;
 import com.app.hupi.util.BeanUtil;
 import com.app.hupi.util.CodeUtil;
 import com.app.hupi.util.JsonUtil;
+import com.app.hupi.util.StringUtil;
 import com.app.hupi.util.WebUtil;
 import com.app.hupi.vo.BankInfoVO;
-import com.app.hupi.vo.TutoringAddVO;
+import com.app.hupi.vo.EduVo;
+import com.app.hupi.vo.IntroduceVo;
+import com.app.hupi.vo.TutoringBaseInfo;
 import com.app.hupi.vo.TutoringDetailVO;
 import com.app.hupi.vo.TutoringListVO;
 import com.app.hupi.vo.TutoringRegisterVO;
 import com.app.hupi.vo.UserVO;
+import com.app.hupi.vo.WorkVo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -40,6 +46,9 @@ public class TutoringContorller {
 
 	@Autowired
 	private TutoringService tutoringService;
+	
+	@Autowired
+	private EmployerService employerService;
 	@Autowired
 	private TutoringOrderService tutoringOrderService;
 	@Autowired
@@ -58,9 +67,8 @@ public class TutoringContorller {
 	
 	@ApiOperation(value = "银行卡信息")
 	@GetMapping("/bankInfo")
-	public DataResult<BankInfoVO> bankInfo() {
-		UserVO userVO=(UserVO) WebUtil.getSession().getAttribute("user");
-		Tutoring tutoring=tutoringService.queryTutoringByNumber(userVO.getNumber());
+	public DataResult<BankInfoVO> bankInfo(@RequestHeader("token")String token) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
 		return DataResult.getSuccessDataResult(JsonUtil.parseObject(tutoring.getBankInfo(), BankInfoVO.class));
 	}
 	
@@ -75,12 +83,12 @@ public class TutoringContorller {
 		return DataResult.getSuccessDataResult(tutoring);
 	}
 	
-	@ApiOperation(value = "家教资料提交")
-	@PostMapping("/addTutoring")
-	public DataResult<Tutoring> addTutoring(@RequestBody TutoringAddVO tutoringAddVO) {
-		Tutoring tutoring=tutoringService.addTutoring(tutoringAddVO);
-		return DataResult.getSuccessDataResult(tutoring);
-	}
+//	@ApiOperation(value = "家教资料提交")
+//	@PostMapping("/addTutoring")
+//	public DataResult<Tutoring> addTutoring(@RequestBody TutoringAddVO tutoringAddVO) {
+//		Tutoring tutoring=tutoringService.addTutoring(tutoringAddVO);
+//		return DataResult.getSuccessDataResult(tutoring);
+//	}
 	
 	@ApiOperation(value = "雇主查看家教列表")
 	@GetMapping("/listTutoringList")
@@ -92,43 +100,103 @@ public class TutoringContorller {
 	        @ApiImplicitParam(name = "pageSize", value = "每页记录数", required = true, dataType = "int")
 	 })
 	public DataResult<List<TutoringListVO>> listTutoringList(
+			@RequestHeader("token")String token,
 			@RequestParam(name="tutoringType",required=true)String tutoringType,
 			@RequestParam(name="lng",required=true)String lng,
 			@RequestParam(name="lat",required=true)String lat,
 			@RequestParam(name="pageNum",required=true)int pageNum,
 			@RequestParam(name="pageSize",required=true)int pageSize) {
-		UserVO userVO=(UserVO) WebUtil.getSession().getAttribute("user");
-		List<TutoringListVO> list=tutoringService.listTutoringList(userVO.getId(),tutoringType, lng, lat, pageNum, pageSize);
+		Employer employer=employerService.queryEmployerByToken(token);
+		List<TutoringListVO> list=tutoringService.listTutoringList(employer.getId(),tutoringType, lng, lat, pageNum, pageSize);
 		return DataResult.getSuccessDataResult(list);
 	}
 	@ApiOperation(value = "家教详情")
 	@GetMapping("/queryTutoringDetail")
-	public DataResult<TutoringDetailVO> queryTutoringDetail(@RequestParam(name="id",required=true)String id) {
-		TutoringDetailVO tutoring=tutoringService.queryTutoringDetail(id);
+	public DataResult<TutoringDetailVO> queryTutoringDetail(@RequestHeader("token")String token,@RequestParam(name="id",required=true)String id) {
+		Employer employer=employerService.queryEmployerByToken(token);
+		TutoringDetailVO tutoring=tutoringService.queryTutoringDetail(id, employer.getId());
 		return DataResult.getSuccessDataResult(tutoring);
 	}
 	
-	@ApiOperation(value = "资料查询")
-	@GetMapping("baseInfo")
-	public DataResult<Tutoring> baseInfo(@RequestHeader("token")String token) {
-		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
-		return  DataResult.getSuccessDataResult(tutoring);
+	@ApiOperation(value = "新人资料是否提现完成,返回1 完成 0 未完成")
+	@GetMapping("baseInfoCheck")
+	public DataResult<Integer> baseInfoCheck(@RequestHeader("token")String token) {
+		 Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		 String name=tutoring.getName();
+		 String workExperience=tutoring.getWorkExperience();
+		 String eduExperience=tutoring.getEduExperience();
+		 String introduce=tutoring.getIntroduce();
+		 String headImage=tutoring.getHeadImage();
+		 if(StringUtil.isEmpty(name)||StringUtil.isEmpty(workExperience)||StringUtil.isEmpty(eduExperience)
+				 ||StringUtil.isEmpty(introduce)||StringUtil.isEmpty(headImage)) {
+			 return DataResult.getSuccessDataResult(0);
+		 }
+		 
+		return  DataResult.getSuccessDataResult(1);
 		
 	}
 	
-	@ApiOperation(value = "资料更新")
-	@PostMapping("updateInfo")
-	public DataResult<Tutoring> updateInfo(@RequestHeader("token")String token,@RequestBody TutoringAddVO tutoringAddVO) {
+	@ApiOperation(value = "查询基本资料")
+	@GetMapping("queryBaseInfo")
+	public DataResult<TutoringBaseInfo> queryBaseInfo(@RequestHeader("token")String token) {
 		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
-		BeanUtil.copyProperties(tutoringAddVO, tutoring);
-		tutoring.setEduExperience(JsonUtil.toJson(tutoringAddVO.getEduExperience()));
-		tutoring.setWorkExperience(JsonUtil.toJson(tutoringAddVO.getWorkExperienceList()));
+		TutoringBaseInfo tutoringBaseInfo=new TutoringBaseInfo();
+		BeanUtil.copyProperties(tutoring, tutoringBaseInfo);
+		return  DataResult.getSuccessDataResult(tutoringBaseInfo);
+		
+	}
+	
+	@ApiOperation(value = "基本资料更新")
+	@PostMapping("updateBaseInfo")
+	public DataResult<Tutoring> updateBaseInfo(@RequestHeader("token")String token,@RequestBody TutoringBaseInfo tutoringBaseInfo) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		BeanUtil.copyProperties(tutoringBaseInfo, tutoring);
 		tutoringService.updateTutoring(tutoring);
 		return  DataResult.getSuccessDataResult(tutoring);
 		
-	}
+   }
+	@ApiOperation(value = "个性介绍更新")
+	@PostMapping("updateIntroduce")
+	public DataResult<Tutoring> updateIntroduce(@RequestHeader("token")String token,@RequestBody IntroduceVo introduceVo) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		tutoring.setIntroduce(introduceVo.getIntroduce());
+		tutoring.setTags(introduceVo.getTags());
+		tutoringService.updateTutoring(tutoring);
+		return  DataResult.getSuccessDataResult(tutoring);
+		
+   }
+	@ApiOperation(value = "头像更新")
+	@PostMapping("updateHeadImage")
+	public DataResult<Tutoring> updateHeadImage(@RequestHeader("token")String token,String  headImage) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		tutoring.setHeadImage(headImage);
+		tutoringService.updateTutoring(tutoring);
+		return  DataResult.getSuccessDataResult(tutoring);
+		
+   }
 	
+	@ApiOperation(value = "教育经验更新")
+	@PostMapping("updateEdu")
+	public DataResult<Tutoring> updateEdu(@RequestHeader("token")String token,
+			@RequestBody  EduVo eduVo) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		eduVo.getEduExperienceList();
+		tutoring.setEduExperience(JsonUtil.toJson(eduVo.getEduExperienceList()));
+		tutoringService.updateTutoring(tutoring);
+		return  DataResult.getSuccessDataResult(tutoring);
+		
+   }
 	
+	@ApiOperation(value = "工作经历更新")
+	@PostMapping("updateWork")
+	public DataResult<Tutoring> updateWork(@RequestHeader("token")String token,
+			@RequestBody  WorkVo workVo) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		tutoring.setEduExperience(JsonUtil.toJson(workVo.getList()));
+		tutoringService.updateTutoring(tutoring);
+		return  DataResult.getSuccessDataResult(tutoring);
+		
+   }
 	
 	
 }

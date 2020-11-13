@@ -14,7 +14,6 @@ import com.app.hupi.service.TutoringService;
 import com.app.hupi.util.CodeUtil;
 import com.app.hupi.util.DateUtil;
 import com.app.hupi.util.KiteUUID;
-import com.app.hupi.util.StringUtil;
 import com.app.hupi.util.WebUtil;
 import com.app.hupi.vo.LoginVO;
 import com.app.hupi.vo.UserInfoVO;

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.hupi.constant.Constant;
 import com.app.hupi.constant.DataResult;
 import com.app.hupi.domain.Comment;
-import com.app.hupi.domain.Demand;
+import com.app.hupi.domain.Employer;
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.domain.TutoringOrder;
 import com.app.hupi.exception.KiteException;
@@ -25,6 +26,7 @@ import com.app.hupi.mapper.TutoringMapper;
 import com.app.hupi.mapper.TutoringOrderMapper;
 import com.app.hupi.service.CodeService;
 import com.app.hupi.service.CommentService;
+import com.app.hupi.service.EmployerService;
 import com.app.hupi.service.TutoringOrderService;
 import com.app.hupi.util.BeanUtil;
 import com.app.hupi.util.DateUtil;
@@ -57,7 +59,8 @@ public class EmployerOrderContorller {
 	private DemandMapper demandMapper;
 	@Autowired
 	private TutoringOrderMapper tutoringOrderMapper;
-	
+	@Autowired
+	private EmployerService employerService;
 	@Autowired
 	private CodeService codeService;
 	@ApiOperation(value = "雇主查询订单列表")
@@ -68,11 +71,14 @@ public class EmployerOrderContorller {
 	        @ApiImplicitParam(name = "status", value = "状态", required = true, dataType = "String")
 	 })
 	public DataResult<List<EmployerOrderListVO>> listEmployerOrder(
+			@RequestHeader("token")String token,
 			@RequestParam(name="pageNum",required=true)int pageNum,
 			@RequestParam(name="pageSize",required=true)int pageSize,
 			@RequestParam(name="status",required=true)String status) {
-		UserVO userVO=UserUtil.getUserVO();
-		List<TutoringOrder> list=tutoringOrderService.listTutoringOrderWithEmployer(pageNum, pageSize, userVO.getId(), status);
+		Employer employer=employerService.queryEmployerByToken(token);
+		String employerId=employer.getId();
+		
+		List<TutoringOrder> list=tutoringOrderService.listTutoringOrderWithEmployer(pageNum, pageSize, employerId, status);
 		List<EmployerOrderListVO> voList=new ArrayList<>();
 		for(TutoringOrder tutoringOrder:list) {
 			EmployerOrderListVO vo=changeEmployerOrderListVO(tutoringOrder);
@@ -134,10 +140,11 @@ public class EmployerOrderContorller {
 	 */
 	@ApiOperation(value = "不合适")
 	@PostMapping("/inappropriate")
-	public DataResult<Integer> inappropriate(@RequestParam String orderId) {
-		UserVO userVO=(UserVO) WebUtil.getSession().getAttribute("user");
+	public DataResult<Integer> inappropriate(@RequestHeader("token")String token,@RequestParam String orderId) {
+		Employer employer=employerService.queryEmployerByToken(token);
+		String employerId=employer.getId();
 		TutoringOrder tutoringOrder=tutoringOrderMapper.selectById(orderId);
-		if(!userVO.getId().equals(tutoringOrder.getEmployerId())) {
+		if(!employerId.equals(tutoringOrder.getEmployerId())) {
 			KiteException.throwException("数据异常");
 		}
 		tutoringOrder.setStatus("不合适");
@@ -153,10 +160,11 @@ public class EmployerOrderContorller {
 	 */
 	@ApiOperation(value = "合适")
 	@PostMapping("/appropriate")
-	public DataResult<Integer>  appropriate(@RequestParam String orderId) {
-		UserVO userVO=(UserVO) WebUtil.getSession().getAttribute("user");
+	public DataResult<Integer>  appropriate(@RequestHeader("token")String token,@RequestParam String orderId) {
+		Employer employer=employerService.queryEmployerByToken(token);
+		String employerId=employer.getId();
 		TutoringOrder tutoringOrder=tutoringOrderMapper.selectById(orderId);
-		if(!userVO.getId().equals(tutoringOrder.getEmployerId())) {
+		if(!employerId.equals(tutoringOrder.getEmployerId())) {
 			KiteException.throwException("数据异常");
 		}
 		tutoringOrder.setStatus("合适");
@@ -173,10 +181,12 @@ public class EmployerOrderContorller {
 	 */
 	@ApiOperation(value = "应约并联系")
 	@PostMapping("/appointment")
-	public DataResult<Integer>  appointment(@RequestParam String orderId) {
+	public DataResult<Integer>  appointment(@RequestHeader("token")String token,@RequestParam String orderId) {
+		Employer employer=employerService.queryEmployerByToken(token);
+		String employerId=employer.getId();
 		UserVO userVO=(UserVO) WebUtil.getSession().getAttribute("user");
 		TutoringOrder tutoringOrder=tutoringOrderMapper.selectById(orderId);
-		if(!userVO.getId().equals(tutoringOrder.getEmployerId())) {
+		if(employerId.equals(tutoringOrder.getEmployerId())) {
 			KiteException.throwException("数据异常");
 		}
 		tutoringOrder.setStatus("应约并联系");

@@ -17,6 +17,8 @@ public class Employer {
 	@ApiModelProperty("注册时间")
 	private String createTime;
 	
+	private String headImage;
+	
 	private String token;
 	
 	private String tokenTime;
