@@ -19,6 +19,12 @@ public class Employer {
 	
 	private String headImage;
 	
+	
+	private String level;
+	
+	private String vipTime;
+	
+	
 	private String token;
 	
 	private String tokenTime;

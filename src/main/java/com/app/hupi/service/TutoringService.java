@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.vo.DeliveryResumeVO;
+import com.app.hupi.vo.SimpleUserVo;
 import com.app.hupi.vo.TutoringAddVO;
 import com.app.hupi.vo.TutoringDetailVO;
 import com.app.hupi.vo.TutoringListVO;
@@ -11,6 +12,9 @@ import com.app.hupi.vo.TutoringRegisterVO;
 
 public interface TutoringService {
 
+	
+	List<SimpleUserVo> queryByYqm(String yqm);
+	
 	Tutoring  queryTutoringByToken(String token);
 	
 	DeliveryResumeVO deliveryResume(String tutoringId,String demandId);

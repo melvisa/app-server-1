@@ -15,6 +15,8 @@ public class TutoringListVO {
 	@ApiModelProperty("家教科目描述")
 	private List<String> subjectList;
 
+	@ApiModelProperty("个性标签")
+	private  List<String> tags;
 	@ApiModelProperty("家教身份")
 	private String tutoringIdentity;
 	@ApiModelProperty("教龄")

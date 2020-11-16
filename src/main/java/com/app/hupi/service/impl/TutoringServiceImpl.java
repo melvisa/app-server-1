@@ -31,6 +31,7 @@ import com.app.hupi.util.StringUtil;
 import com.app.hupi.util.WebUtil;
 import com.app.hupi.vo.DeliveryResumeVO;
 import com.app.hupi.vo.EduExperienceVO;
+import com.app.hupi.vo.SimpleUserVo;
 import com.app.hupi.vo.TutoringAddVO;
 import com.app.hupi.vo.TutoringDetailVO;
 import com.app.hupi.vo.TutoringListVO;
@@ -167,18 +168,21 @@ public class TutoringServiceImpl implements TutoringService {
 	public List<TutoringListVO> listTutoringList(String employerId, String tutoringType,String lng, String lat, int pageIndex,
 			int pageSize) {
 		PageHelper.startPage(pageIndex, pageSize);
-		String sqlSelect="id, name ,head_image as headImage ,"
+		String sqlSelect="id, name ,head_image as headImage , tags ,"
 				+ "tutoring_type as tutoringType , auth_info  as authInfo,"
 				+ "tutoring_identity as tutoringIdentity,"
-				+ "teache_time as teacheTime,sex ,age,lng,lat,cert_flag as certFlag,cast((st_distance(point(lng,lat),point("+lng+","+lat+"))*111195/1000 )AS CHAR) as distance ";
+				+ "teache_time as teacheTime,sex ,age,lng,lat,cert_flag ";
 		EntityWrapper<Tutoring> wrapper=new EntityWrapper<Tutoring>();
 		wrapper.setSqlSelect(sqlSelect);
 		wrapper.like("tutoring_type", tutoringType);
-		wrapper.orderBy("distance");
 		List<TutoringListVO> result=new ArrayList<>();
 		List<Map<String, Object>> list=tutoringMapper.selectMaps(wrapper);
 		for(Map<String, Object> map:list) {
 			TutoringListVO vo=MapUtil.mapToBean(map, TutoringListVO.class);
+			String tags=MapUtil.getString(map, "tags");
+			if(tags!=null) {
+				vo.setTags(Arrays.asList(tags.split(",")));
+			}
 			List<String>subs=changeSubjectList(MapUtil.getString(map, "tutoringType"));
 			vo.setSubjectList(subs);
 			if(vo.getAuthInfo()==null) {
@@ -187,11 +191,11 @@ public class TutoringServiceImpl implements TutoringService {
 			else {
 				vo.setAuthInfo("已实名认证");
 			}
-			vo.setTutoringIdentity(codeService.queryCodeValueByGroupAndValue("tutoring_identity", vo.getTutoringIdentity()));
+			//vo.setTutoringIdentity(codeService.queryCodeValueByGroupAndValue("tutoring_identity", vo.getTutoringIdentity()));
+			vo.setTutoringIdentity(MapUtil.getString(map, "tutoringIdentity"));
 			result.add(vo);
 		}
 		// 个性标签  评价   是否关注  是否预约
-		
 		return result;
 	}
 	
@@ -242,7 +246,13 @@ public class TutoringServiceImpl implements TutoringService {
 		else {
 			vo.setAuthInfo("已实名认证");
 		}
-		vo.setTutoringIdentity(codeService.queryCodeValueByGroupAndValue("tutoring_identity", tutoring.getTutoringIdentity()));
+		
+		// images相册
+		String album=tutoring.getAlbum();
+		if(album!=null) {
+			vo.setImages(Arrays.asList(album.split(",")));
+		}
+		//vo.setTutoringIdentity(codeService.queryCodeValueByGroupAndValue("tutoring_identity", tutoring.getTutoringIdentity()));
 		// 个性标签和评价字段，
 		// 是否关注
 		Attention attention=attentionService.queryAttention(employerId, tutoring.getId());
@@ -286,6 +296,26 @@ public class TutoringServiceImpl implements TutoringService {
 			tutoringMapper.updateById(tutoring);
 		}
 		return tutoring;
+	}
+
+
+
+	@Override
+	public List<SimpleUserVo> queryByYqm(String yqm) {
+		EntityWrapper<Tutoring> wrapper=new EntityWrapper();
+		wrapper.eq("yqm", yqm);
+		List<Tutoring> list=tutoringMapper.selectList(wrapper);
+		List<SimpleUserVo> voList=new ArrayList<>();
+		for(Tutoring t:list) {
+			SimpleUserVo vo=new SimpleUserVo();
+			vo.setId(t.getId());
+			vo.setYqm(t.getYqmSelf());
+			vo.setHeadImage(t.getHeadImage());
+			vo.setName(t.getName());
+			vo.setTime(t.getCreateTime());
+			voList.add(vo);
+		}
+		return voList;
 	}
 	
 	

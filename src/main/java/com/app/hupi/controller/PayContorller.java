@@ -2,7 +2,6 @@ package com.app.hupi.controller;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
@@ -15,9 +14,9 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jdom.JDOMException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.app.hupi.constant.DataResult;
 import com.app.hupi.enums.PayWay;
+import com.app.hupi.vo.PayParamVo;
 import com.app.hupi.wxpay.PayCommonUtil;
 import com.app.hupi.wxpay.XMLUtil;
 
@@ -35,6 +35,51 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = {"支付模块"})
 @RestController
 public class PayContorller {
+	
+	 /**
+     * 雇主支付雇佣费，支付方：雇主，收款方：工人
+     *
+     * @param request
+     * @param response
+     * @param userId
+     * @param payParams
+     * @return
+     */
+	@GetMapping(value = "/orderString")
+	@ApiOperation(value = "支付参数获取")
+    public DataResult<Object> orderString(HttpServletRequest request,
+    		HttpServletResponse response,  @RequestBody PayParamVo payParamVo) {
+        String baseUrl = request.getRequestURL().toString();
+        baseUrl = baseUrl.substring(0, baseUrl.indexOf("app-server") + "app-server".length());
+//        Object result = null;
+//        String price = payParams.getPrice();
+//        int priceInt = Integer.parseInt(price);
+//        if (payParams.getIsUseHongBao() == 1) {
+//            priceInt -= payParams.getHongBao();
+//        }
+//        if (payParams.getPay_way().equals(PayWay.ALiPay.toString())) {
+//            result = aliPay(baseUrl, priceInt + "", payParams.getGoods_introduction(), payParams.getOrderId());
+//        } else if (payParams.getPay_way().equals(PayWay.WechatPay.toString())) {
+//            priceInt *= 100;
+//            result = wxPrePay(request, baseUrl, priceInt + "", payParams.getOrderId());
+//        }
+//        return DataResult.getSuccessDataResult(result);
+    }
+//
+//	
+//	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	  /**
      * 微信异步通知
      */

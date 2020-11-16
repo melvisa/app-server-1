@@ -1,5 +1,6 @@
 package com.app.hupi.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +24,18 @@ import com.app.hupi.util.BeanUtil;
 import com.app.hupi.util.CodeUtil;
 import com.app.hupi.util.JsonUtil;
 import com.app.hupi.util.StringUtil;
-import com.app.hupi.util.WebUtil;
 import com.app.hupi.vo.BankInfoVO;
 import com.app.hupi.vo.EduVo;
 import com.app.hupi.vo.IntroduceVo;
+import com.app.hupi.vo.ScheduleObjVo;
+import com.app.hupi.vo.ScheduleVo;
+import com.app.hupi.vo.SimpleUserVo;
+import com.app.hupi.vo.ToturingUserInfo;
+import com.app.hupi.vo.TutoringAddVO;
 import com.app.hupi.vo.TutoringBaseInfo;
 import com.app.hupi.vo.TutoringDetailVO;
 import com.app.hupi.vo.TutoringListVO;
 import com.app.hupi.vo.TutoringRegisterVO;
-import com.app.hupi.vo.UserVO;
 import com.app.hupi.vo.WorkVo;
 
 import io.swagger.annotations.Api;
@@ -56,12 +60,11 @@ public class TutoringContorller {
 	
 	@ApiOperation(value = "银行卡绑定")
 	@PostMapping("/bindBank")
-	public DataResult<BankInfoVO> bindBank(@RequestBody BankInfoVO bankInfoVO) {
-		UserVO userVO=(UserVO) WebUtil.getSession().getAttribute("user");
-		Tutoring tutoring=tutoringService.queryTutoringByNumber(userVO.getNumber());
+	public DataResult<BankInfoVO> bindBank(@RequestHeader("token")String token,@RequestBody BankInfoVO bankInfoVO) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
 		tutoring.setBankInfo(JsonUtil.toJson(bankInfoVO));
 		tutoringService.updateTutoring(tutoring);
-		tutoring=tutoringService.queryTutoringByNumber(userVO.getNumber());
+		tutoring=tutoringService.queryTutoringByNumber(tutoring.getNumber());
 		return DataResult.getSuccessDataResult(JsonUtil.parseObject(tutoring.getBankInfo(), BankInfoVO.class));
 	}
 	
@@ -83,31 +86,28 @@ public class TutoringContorller {
 		return DataResult.getSuccessDataResult(tutoring);
 	}
 	
-//	@ApiOperation(value = "家教资料提交")
-//	@PostMapping("/addTutoring")
-//	public DataResult<Tutoring> addTutoring(@RequestBody TutoringAddVO tutoringAddVO) {
-//		Tutoring tutoring=tutoringService.addTutoring(tutoringAddVO);
-//		return DataResult.getSuccessDataResult(tutoring);
-//	}
+	@ApiOperation(value = "家教资料提交")
+	@PostMapping("/addTutoring")
+	public DataResult<Tutoring> addTutoring(@RequestBody TutoringAddVO tutoringAddVO) {
+		Tutoring tutoring=tutoringService.addTutoring(tutoringAddVO);
+		return DataResult.getSuccessDataResult(tutoring);
+	}
 	
 	@ApiOperation(value = "雇主查看家教列表")
 	@GetMapping("/listTutoringList")
 	 @ApiImplicitParams({
 		    @ApiImplicitParam(name = "tutoringType", value = "家教类型", required = true, dataType = "String"),
-	        @ApiImplicitParam(name = "lng", value = "经度", required = true, dataType = "String"),
-	        @ApiImplicitParam(name = "lat", value = "纬度", required = true, dataType = "String"),
 	        @ApiImplicitParam(name = "pageNum", value = "第几页", required = true, dataType = "int"),
 	        @ApiImplicitParam(name = "pageSize", value = "每页记录数", required = true, dataType = "int")
 	 })
 	public DataResult<List<TutoringListVO>> listTutoringList(
 			@RequestHeader("token")String token,
 			@RequestParam(name="tutoringType",required=true)String tutoringType,
-			@RequestParam(name="lng",required=true)String lng,
-			@RequestParam(name="lat",required=true)String lat,
+			
 			@RequestParam(name="pageNum",required=true)int pageNum,
 			@RequestParam(name="pageSize",required=true)int pageSize) {
 		Employer employer=employerService.queryEmployerByToken(token);
-		List<TutoringListVO> list=tutoringService.listTutoringList(employer.getId(),tutoringType, lng, lat, pageNum, pageSize);
+		List<TutoringListVO> list=tutoringService.listTutoringList(employer.getId(),tutoringType, "", "", pageNum, pageSize);
 		return DataResult.getSuccessDataResult(list);
 	}
 	@ApiOperation(value = "家教详情")
@@ -131,20 +131,95 @@ public class TutoringContorller {
 				 ||StringUtil.isEmpty(introduce)||StringUtil.isEmpty(headImage)) {
 			 return DataResult.getSuccessDataResult(0);
 		 }
-		 
 		return  DataResult.getSuccessDataResult(1);
 		
 	}
 	
 	@ApiOperation(value = "查询基本资料")
 	@GetMapping("queryBaseInfo")
-	public DataResult<TutoringBaseInfo> queryBaseInfo(@RequestHeader("token")String token) {
+	public DataResult<Tutoring> queryBaseInfo(@RequestHeader("token")String token) {
 		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
-		TutoringBaseInfo tutoringBaseInfo=new TutoringBaseInfo();
-		BeanUtil.copyProperties(tutoring, tutoringBaseInfo);
-		return  DataResult.getSuccessDataResult(tutoringBaseInfo);
-		
+		return  DataResult.getSuccessDataResult(tutoring);
 	}
+	
+	@ApiOperation(value = "查询我的邀请码")
+	@GetMapping("queryYqm")
+	public DataResult<String> queryYqm(@RequestHeader("token")String token) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		return  DataResult.getSuccessDataResult(tutoring.getYqmSelf());
+	}
+	
+	@ApiOperation(value = "家教个人中心信息")
+	@GetMapping("queryToturingUserInfo")
+	public DataResult<ToturingUserInfo> queryToturingUserInfo(@RequestHeader("token")String token) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		ToturingUserInfo info=new ToturingUserInfo();
+		info.setHeadImage(tutoring.getHeadImage());
+		info.setName(tutoring.getName());
+		info.setTotalAccount(tutoring.getTotalAccount());
+		info.setVipTag(tutoring.getLevel());
+		info.setVipTime(tutoring.getVipTime());
+		return  DataResult.getSuccessDataResult(info);
+	}
+
+
+	@ApiOperation(value = "查询我的下线")
+	@GetMapping("subUserByYqm")
+	public DataResult<List<SimpleUserVo>> subUser(String yqm) {
+		List<SimpleUserVo> list=tutoringService.queryByYqm(yqm);
+		return  DataResult.getSuccessDataResult(list);
+	}
+	
+	
+	@ApiOperation(value = "查询我的相册")
+	@GetMapping("album")
+	public DataResult<List<String>> album(@RequestHeader("token")String token) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		String album=tutoring.getAlbum();
+		return  DataResult.getSuccessDataResult(Arrays.asList(album.split(",")));
+	}
+	
+	
+	@ApiOperation(value = "更新我的相册,多个相册之间英文逗号分隔")
+	@PostMapping("updateAlbum")
+	public DataResult<List<String>> updateAlbum(@RequestHeader("token")String token
+			,String album) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		tutoring.setAlbum(album);
+		tutoringService.updateTutoring(tutoring);
+		return  DataResult.getSuccessDataResult(Arrays.asList(album.split(",")));
+	}
+	
+	@ApiOperation(value = "查询我的下线")
+	@GetMapping("subUserByToken")
+	public DataResult<List<SimpleUserVo>> subUserByToken(@RequestHeader("token")String token) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		List<SimpleUserVo> list=tutoringService.queryByYqm(tutoring.getYqmSelf());
+		return  DataResult.getSuccessDataResult(list);
+	}
+	
+	
+	@ApiOperation(value = "查询我的课程安排")
+	@GetMapping("querySchedule")
+	public DataResult<List<ScheduleVo>> querySchedule(@RequestHeader("token")String token) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		String str=tutoring.getSchedule();
+		List<ScheduleVo> list=JsonUtil.parseArray(str, ScheduleVo.class );
+		return  DataResult.getSuccessDataResult(list);
+	}
+	
+	
+	@ApiOperation(value = "更新课程安排")
+	@GetMapping("updateSchedule")
+	public DataResult<List<ScheduleVo>> updateSchedule(@RequestHeader("token")String token,
+			@RequestBody ScheduleObjVo scheduleObjVo) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		String json=JsonUtil.toJson(scheduleObjVo);
+		tutoring.setSchedule(json);
+		tutoringService.updateTutoring(tutoring);
+		return querySchedule(token);
+	}
+	
 	
 	@ApiOperation(value = "基本资料更新")
 	@PostMapping("updateBaseInfo")

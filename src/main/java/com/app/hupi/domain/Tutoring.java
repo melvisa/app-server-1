@@ -32,6 +32,15 @@ public class Tutoring {
 	private String introduce;
 	@ApiModelProperty("标签")
 	private String tags;
+	@ApiModelProperty("课程表")
+	private String schedule;
+	
+	@ApiModelProperty("相册")
+	private String album;
+	@ApiModelProperty("身份级别 0 普通家教 1 vip")
+	private String level;
+	@ApiModelProperty("VIP剩余时间 天数")
+	private String vipTime;
 	
 	@ApiModelProperty("家教身份")
 	private String tutoringIdentity;
