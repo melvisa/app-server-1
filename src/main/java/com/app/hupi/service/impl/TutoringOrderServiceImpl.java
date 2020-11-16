@@ -34,6 +34,22 @@ public class TutoringOrderServiceImpl implements TutoringOrderService {
 
 	@Override
 	public List<TutoringOrder> listTutoringOrderWithTutoring(int pageNum,int pageSize,String tutoringId, String status) {
+		
+		if("1".equals(status)) {
+			status="待应约";
+		}
+		else if("2".equals(status)) {
+			status="待确认";
+		}
+		
+		if("3".equals(status)) {
+			status="合适";
+		}
+		
+		if("4".equals(status)) {
+			status="不合适";
+		}
+		
 		EntityWrapper<TutoringOrder> wrapper=new EntityWrapper<>();
 		wrapper.eq("tutoring_id", tutoringId).eq("status", status);
 		PageHelper.startPage(pageNum,pageSize);
@@ -42,6 +58,22 @@ public class TutoringOrderServiceImpl implements TutoringOrderService {
 
 	@Override
 	public List<TutoringOrder> listTutoringOrderWithEmployer(int pageNum,int pageSize,String employerId, String status) {
+
+		if("1".equals(status)) {
+			status="待应约";
+		}
+		else if("2".equals(status)) {
+			status="待确认";
+		}
+		
+		if("3".equals(status)) {
+			status="合适";
+		}
+		
+		if("4".equals(status)) {
+			status="不合适";
+		}
+		
 		EntityWrapper<TutoringOrder> wrapper=new EntityWrapper<>();
 		wrapper.eq("employer_id", employerId).eq("status", status);
 		PageHelper.startPage(pageNum,pageSize);

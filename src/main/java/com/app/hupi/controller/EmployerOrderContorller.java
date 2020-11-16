@@ -111,8 +111,8 @@ public class EmployerOrderContorller {
 		Map<String,String>map=new HashMap<>();
 		for(String s:types) {
 		   String className=s.substring(0, s.lastIndexOf("_", s.length()));
-		   String classNameDesc = codeService.queryCodeValueByGroupAndValue("tutoring_type", className);
-		   String subName=codeService.queryCodeValueByGroupAndValue(className, s);
+		   String classNameDesc = codeService.queryCodeValueByGroupAndValue("tutoring_type", className).split(",")[0];
+		   String subName=codeService.queryCodeValueByGroupAndValue(className, s).split(",")[0];
 			if(map.containsKey(className)) {
 				map.put(className, map.get(classNameDesc)+","+subName);
 			}

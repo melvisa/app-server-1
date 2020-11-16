@@ -61,7 +61,24 @@ public class DemandServiceImpl  implements DemandService{
 		PageHelper.startPage(pageNum, pageSize);
 		EntityWrapper<Demand> wrapper=new EntityWrapper<Demand>();
 		wrapper.eq("employer_id", employerId);
-		return demandMapper.selectList(wrapper);
+		List<Demand> list= demandMapper.selectList(wrapper);
+		List<Code> codeList=codeService.listCodeByGroup("tutoring_type");
+		for(Demand d:list) {
+			String className=d.getClassName();
+			d.setClassName(changeClassName(className,codeList));
+		// tutoring_type_gaozhong_yuwen,tutoring_type_gaozhong_yingyu,tutoring_type_gaozhong_shengwu,tutoring_type_gaozhong_shuxue
+			String subs=d.getSubs();
+			String[] subList=subs.split(",");
+			String str="";
+			for(String s:subList) {
+				String clasName=s.substring(0, s.lastIndexOf("_"));
+				String s2=codeService.queryCodeValueByGroupAndValue(clasName, s).split(",")[0];
+				str=str+s2;
+			}
+			d.setSubs(str);
+		}
+		
+	   return list;
 	}
 	@Override
 	public Demand udpateDemand(Demand demand) {
