@@ -31,6 +31,13 @@ public class DemandListVO {
 	private String salary;
 	@ApiModelProperty(value="是否需要诚意金 直接传是或者否",required=true)
 	private String earnestFlag;
+	@ApiModelProperty("经度")
+	private String lng;
+	@ApiModelProperty("纬度")
+	private String lat;
+	@ApiModelProperty("距离")
+	private String distance;
+	
 	private String createTime;
 	private String status;
 }

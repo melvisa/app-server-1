@@ -51,24 +51,10 @@ public class PayContorller {
     		HttpServletResponse response,  @RequestBody PayParamVo payParamVo) {
         String baseUrl = request.getRequestURL().toString();
         baseUrl = baseUrl.substring(0, baseUrl.indexOf("app-server") + "app-server".length());
-//        Object result = null;
-//        String price = payParams.getPrice();
-//        int priceInt = Integer.parseInt(price);
-//        if (payParams.getIsUseHongBao() == 1) {
-//            priceInt -= payParams.getHongBao();
-//        }
-//        if (payParams.getPay_way().equals(PayWay.ALiPay.toString())) {
-//            result = aliPay(baseUrl, priceInt + "", payParams.getGoods_introduction(), payParams.getOrderId());
-//        } else if (payParams.getPay_way().equals(PayWay.WechatPay.toString())) {
-//            priceInt *= 100;
-//            result = wxPrePay(request, baseUrl, priceInt + "", payParams.getOrderId());
-//        }
-//        return DataResult.getSuccessDataResult(result);
-    }
-//
-//	
-//	
+   return null;
 	
+	}
+
 	
 	
 	

@@ -19,6 +19,7 @@ import com.app.hupi.service.CodeService;
 import com.app.hupi.service.DemandService;
 import com.app.hupi.util.BeanUtil;
 import com.app.hupi.util.DateUtil;
+import com.app.hupi.util.DoubleUtil;
 import com.app.hupi.util.KiteUUID;
 import com.app.hupi.util.ListUtil;
 import com.app.hupi.util.LngAndLatUtils;
@@ -133,7 +134,14 @@ public class DemandServiceImpl  implements DemandService{
 		PageHelper.startPage(pageNum, pageSize);
 		List<Demand> demandList=demandMapper.selectList(wrapper2);
 		totalDemand.addAll(demandList);
+		
 		demandListVO=BeanUtil.copyPropsForList(totalDemand, DemandListVO.class);
+		// 距离计算
+		for(DemandListVO vo:demandListVO) {
+			vo.setDistance(
+					getDistance(Double.parseDouble(lat),Double.parseDouble(lng)
+					,Double.parseDouble(vo.getLat()),Double.parseDouble(vo.getLng())));
+		}
 		// className  subs转换
 		List<Code> codeList=codeService.listCodeByGroup("tutoring_type");
 		for(DemandListVO vo:demandListVO) {
@@ -154,6 +162,19 @@ public class DemandServiceImpl  implements DemandService{
 		
 		return demandListVO;
 	}
+	
+	public  String getDistance(Double lat1,Double lng1,Double lat2,Double lng2) {
+        double radiansAX = Math.toRadians(lng1); // A经弧度
+        double radiansAY = Math.toRadians(lat1); // A纬弧度
+        double radiansBX = Math.toRadians(lng2); // B经弧度
+        double radiansBY = Math.toRadians(lat2); // B纬弧度
+        double cos = Math.cos(radiansAY) * Math.cos(radiansBY) * Math.cos(radiansAX - radiansBX)
+            + Math.sin(radiansAY) * Math.sin(radiansBY);
+        double acos = Math.acos(cos); // 反余弦值
+        double result= 6371393 * acos; // 最终结果
+        return Math.floor((result/1000)) +"km";
+	}
+
   public static void main(String[] args) {
 	String s="tutoring_type_gaozhong_yuwen";
 	System.out.println(s.lastIndexOf("_"));

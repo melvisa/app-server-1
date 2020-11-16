@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.hupi.constant.DataResult;
+import com.app.hupi.domain.Code;
 import com.app.hupi.domain.Demand;
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.domain.TutoringOrder;
@@ -26,6 +27,7 @@ import com.app.hupi.service.TutoringService;
 import com.app.hupi.util.UserUtil;
 import com.app.hupi.util.WebUtil;
 import com.app.hupi.vo.DeliveryResumeVO;
+import com.app.hupi.vo.DemandListVO;
 import com.app.hupi.vo.UserVO;
 
 import io.swagger.annotations.Api;
@@ -84,14 +86,33 @@ public class TutoringOrderContorller {
 		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
 		List<TutoringOrder> list=tutoringOrderService.listTutoringOrderWithTutoring(pageNum, pageSize, tutoring.getId(), status);
 		List<Demand> demandList=new ArrayList<>();
+		List<Code> codeList=codeService.listCodeByGroup("tutoring_type");
 		for(TutoringOrder t:list) {
 			Demand d=demandMapper.selectById(t.getDemandId());
-			demandList.add(d);
-		}
+				String className=d.getClassName();
+				d.setClassName(changeClassName(className,codeList));
+				String subs=d.getSubs();
+				String[] subList=subs.split(",");
+				String str="";
+				for(String s:subList) {
+					String clasName=s.substring(0, s.lastIndexOf("_"));
+					String s2=codeService.queryCodeValueByGroupAndValue(clasName, s).split(",")[0];
+					str=str+s2;
+				}
+				d.setSubs(str);
+				demandList.add(d);
+			}
 		return DataResult.getSuccessDataResult(demandList);
 	}
 	
-	
+private String changeClassName(String className,List<Code> list) {
+	for(Code  code:list) {
+		if(code.getValue().equals(className)) {
+			return code.getName().split(",")[0];
+		}
+	}
+	return "";
+}
 	
 	
 }
