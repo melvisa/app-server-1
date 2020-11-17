@@ -105,14 +105,14 @@ public class TutoringOrderContorller {
 		return DataResult.getSuccessDataResult(demandList);
 	}
 	
-private String changeClassName(String className,List<Code> list) {
-	for(Code  code:list) {
-		if(code.getValue().equals(className)) {
-			return code.getName().split(",")[0];
+		private String changeClassName(String className,List<Code> list) {
+			for(Code  code:list) {
+				if(code.getValue().equals(className)) {
+					return code.getName().split(",")[0];
+				}
+			}
+			return "";
 		}
-	}
-	return "";
-}
-	
+			
 	
 }

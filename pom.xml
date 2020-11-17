@@ -34,6 +34,12 @@
     <version> 3.10.2</version>
 </dependency>
 
+<!-- https://mvnrepository.com/artifact/com.alipay.api/k12-alipay-sdk -->
+<dependency>
+    <groupId>com.alipay.api</groupId>
+    <artifactId>k12-alipay-sdk</artifactId>
+    <version>0.0.1-beta</version>
+</dependency>
 
         <!-- swagger start -->
         <dependency>

@@ -11,7 +11,4 @@ public class PayParamVo {
    private String payFor;
    @ApiModelProperty(value="家教订单 需要传之前生成的订单号")
    private String orderId;
-   @ApiModelProperty(value="vip 订单需要传vipId")
-   private String vipId;
-	  
 }
