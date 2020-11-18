@@ -188,4 +188,10 @@ public class DemandServiceImpl  implements DemandService{
 		}
 		return "";
 	}
+	@Override
+	public int demandNum(String employerId) {
+		EntityWrapper<Demand> wrapper=new EntityWrapper<Demand>();
+		wrapper.eq("employer_id", employerId);
+		return demandMapper.selectCount(wrapper);
+	}
 }

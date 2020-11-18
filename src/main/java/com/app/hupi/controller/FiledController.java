@@ -49,7 +49,8 @@ public class FiledController {
 		// 实现文件的上传
 		path = path + secondPath + fileName;
 		fileImage.transferTo(new File(path));
-		return "https://www.foodbuy.top"+secondPath + fileName;
+		// TODO  需要替换
+		return path;
 	}
 
 }

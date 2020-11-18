@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.app.hupi.constant.Constant;
+import com.app.hupi.domain.Appointment;
 import com.app.hupi.domain.Attention;
 import com.app.hupi.domain.Demand;
 import com.app.hupi.domain.Tutoring;
@@ -19,6 +20,7 @@ import com.app.hupi.exception.KiteException;
 import com.app.hupi.mapper.DemandMapper;
 import com.app.hupi.mapper.TutoringMapper;
 import com.app.hupi.mapper.TutoringOrderMapper;
+import com.app.hupi.service.AppointmentService;
 import com.app.hupi.service.AttentionService;
 import com.app.hupi.service.CodeService;
 import com.app.hupi.service.TutoringService;
@@ -55,6 +57,8 @@ public class TutoringServiceImpl implements TutoringService {
 	private TutoringOrderMapper tutoringOrderMapper;
 	@Autowired
 	private AttentionService attentionService;
+	@Autowired
+	private AppointmentService appointmentService;
 	
 	/**
 	 * 投递简历
@@ -266,6 +270,17 @@ public class TutoringServiceImpl implements TutoringService {
 		if(tags!=null) {
 			vo.setTags(Arrays.asList(tags.split(",")));
 		}
+		// 是否预约
+		Appointment appointment=appointmentService.queryAppointmentBy(employerId, tutoring.getId());
+		
+		if(appointment==null) {
+			vo.setAppointmenTag("0");
+		}
+		else {
+			vo.setAppointmenTag("1");
+		}
+		
+		
 		return vo;
 	}
 	@Override

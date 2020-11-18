@@ -47,4 +47,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return null;
 	}
 
+	@Override
+	public Appointment queryAppointmentBy(String employerId, String tutoringId) {
+		EntityWrapper<Appointment> wrapper=new EntityWrapper<>();
+		wrapper.eq("employer_id", employerId).eq("tutoring_id", tutoringId);
+		List<Appointment> list=appointmentMapper.selectList(wrapper);
+		if(list.size()>0) {
+			return list.get(0);
+		}
+		return null;
+	}
+
 }

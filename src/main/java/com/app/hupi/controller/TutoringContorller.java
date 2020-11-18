@@ -17,11 +17,13 @@ import com.app.hupi.domain.Employer;
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.exception.KiteException;
 import com.app.hupi.mapper.TutoringOrderMapper;
+import com.app.hupi.service.CodeService;
 import com.app.hupi.service.EmployerService;
 import com.app.hupi.service.TutoringOrderService;
 import com.app.hupi.service.TutoringService;
 import com.app.hupi.util.BeanUtil;
 import com.app.hupi.util.CodeUtil;
+import com.app.hupi.util.DateUtil;
 import com.app.hupi.util.JsonUtil;
 import com.app.hupi.util.StringUtil;
 import com.app.hupi.vo.BankInfoVO;
@@ -50,7 +52,8 @@ public class TutoringContorller {
 
 	@Autowired
 	private TutoringService tutoringService;
-	
+	@Autowired
+	private CodeService codeService;
 	@Autowired
 	private EmployerService employerService;
 	@Autowired
@@ -158,7 +161,14 @@ public class TutoringContorller {
 		info.setName(tutoring.getName());
 		info.setTotalAccount(tutoring.getTotalAccount());
 		info.setVipTag(tutoring.getLevel());
-		info.setVipTime(tutoring.getVipTime());
+		if("1".equals(tutoring.getLevel())) {
+			//计算剩余天数
+			long subDay=DateUtil.getBetweenDays(DateUtil.getFormatedDate(), 
+					tutoring.getVipTime(), DateUtil.DATE_FORMAT);
+			info.setVipTime(subDay+"");
+		}
+		String serviceNumber=codeService.queryCodeValueByGroupAndValue("serviceNumber", "serviceNumber");
+		info.setServiceNumber(serviceNumber);
 		return  DataResult.getSuccessDataResult(info);
 	}
 
@@ -267,7 +277,7 @@ public class TutoringContorller {
 	public DataResult<Tutoring> updateWork(@RequestHeader("token")String token,
 			@RequestBody  WorkVo workVo) {
 		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
-		tutoring.setEduExperience(JsonUtil.toJson(workVo.getList()));
+		tutoring.setWorkExperience(JsonUtil.toJson(workVo.getList()));
 		tutoringService.updateTutoring(tutoring);
 		return  DataResult.getSuccessDataResult(tutoring);
 		

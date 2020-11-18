@@ -8,6 +8,8 @@ import com.app.hupi.vo.DemandListVO;
 
 public interface DemandService {
 
+	 int demandNum(String employerId);
+	
 	 Demand addDemand(String employerId,DemandAddVO demandAddVO);
 	 
 	 List<Demand> listDemandByEmployer(String employerId,int pageNum,int pageSize);

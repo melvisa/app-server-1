@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.JDOMException;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -58,7 +58,7 @@ public class PayContorller {
      * @param payParams
      * @return
      */
-	@GetMapping(value = "/orderString")
+	@PostMapping(value = "/orderString")
 	@ApiOperation(value = "支付参数获取")
     public DataResult<Object> orderString(HttpServletRequest request,
     		HttpServletResponse response,  @RequestBody PayParamVo payParamVo) {

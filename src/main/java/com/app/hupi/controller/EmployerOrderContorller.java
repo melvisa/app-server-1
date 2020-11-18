@@ -113,14 +113,15 @@ public class EmployerOrderContorller {
 		   String className=s.substring(0, s.lastIndexOf("_", s.length()));
 		   String classNameDesc = codeService.queryCodeValueByGroupAndValue("tutoring_type", className).split(",")[0];
 		   String subName=codeService.queryCodeValueByGroupAndValue(className, s).split(",")[0];
-			if(map.containsKey(className)) {
-				map.put(className, map.get(classNameDesc)+","+subName);
+			if(map.containsKey(classNameDesc)) {
+				map.put(classNameDesc, map.get(classNameDesc)+","+subName);
 			}
 			else {
-				map.put(classNameDesc, subName);
+				map.put(classNameDesc, classNameDesc+subName);
 			}
 		}
 		vo.setTutoringType(JsonUtil.toJson(map.values()));
+		vo.setTutoringTypeList(map.values());
 		vo.setCommentFlag("0");
 		vo.setOrderId(tutoringOrder.getId());
 		if("待确认".equals(tutoringOrder.getStatus())) {
@@ -184,12 +185,11 @@ public class EmployerOrderContorller {
 	public DataResult<Integer>  appointment(@RequestHeader("token")String token,@RequestParam String orderId) {
 		Employer employer=employerService.queryEmployerByToken(token);
 		String employerId=employer.getId();
-		UserVO userVO=(UserVO) WebUtil.getSession().getAttribute("user");
 		TutoringOrder tutoringOrder=tutoringOrderMapper.selectById(orderId);
-		if(employerId.equals(tutoringOrder.getEmployerId())) {
+		if(!employerId.equals(tutoringOrder.getEmployerId())) {
 			KiteException.throwException("数据异常");
 		}
-		tutoringOrder.setStatus("应约并联系");
+		tutoringOrder.setStatus("待确认");
 		tutoringOrder.setYyblxTime(DateUtil.getFormatedDateTime());
 		int i=tutoringOrderMapper.updateById(tutoringOrder);
 		return DataResult.getSuccessDataResult(i);

@@ -6,6 +6,8 @@ import com.app.hupi.domain.Attention;
 import com.app.hupi.vo.AttentionListVO;
 
 public interface AttentionService {
+	
+	int attentionNumByEmpoyerId(String employerId);
 
 	Attention addAttention(String employerId,String tutoringId);
 	

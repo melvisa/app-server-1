@@ -80,6 +80,14 @@ public class TutoringOrderServiceImpl implements TutoringOrderService {
 		return tutoringOrderMapper.selectList(wrapper);
 	}
 
+	@Override
+	public TutoringOrder queryTutoringOrderByOrderId(String orderId) {
+		TutoringOrder  tutoringOrder=new TutoringOrder();
+		tutoringOrder.setOrderId(orderId);
+		return tutoringOrderMapper.selectOne(tutoringOrder);
+		
+	}
+
 	
 	
 	

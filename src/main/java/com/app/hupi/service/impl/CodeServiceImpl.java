@@ -38,7 +38,7 @@ public class CodeServiceImpl  implements CodeService{
 	public String queryCodeValueByGroupAndValue(String group, String value) {
 		Code c=queryCodeByGroupAndValue(group, value);
 		if(c==null) {
-			return null;
+			return "";
 		}
 		return c.getName();
 	}

@@ -77,4 +77,11 @@ public class AttentionServiceImpl implements AttentionService {
 		return null;
 	}
 
+	@Override
+	public int attentionNumByEmpoyerId(String employerId) {
+		EntityWrapper<Attention> wrapper=new EntityWrapper<Attention>();
+		wrapper.eq("employer_id", employerId);
+		return attentionMapper.selectCount(wrapper);
+	}
+
 }

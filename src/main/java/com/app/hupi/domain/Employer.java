@@ -19,12 +19,11 @@ public class Employer {
 	
 	private String headImage;
 	
-	
+	@ApiModelProperty("0 普通雇主  1 vip雇主")
 	private String level;
-	
+	@ApiModelProperty("vip到期时间")
 	private String vipTime;
-	
-	
+
 	private String token;
 	
 	private String tokenTime;

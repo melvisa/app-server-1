@@ -13,7 +13,10 @@ public class ToturingUserInfo {
 	private Integer totalAccount;
 	@ApiModelProperty("VIP标识")
 	private String vipTag;
-	@ApiModelProperty("VIP标识")
+	@ApiModelProperty("VIP剩余时间天数")
 	private String vipTime;
+	@ApiModelProperty("客服电话")
+	private String serviceNumber;
+	
 	
 }

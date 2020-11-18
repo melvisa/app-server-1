@@ -1,5 +1,7 @@
 package com.app.hupi.vo;
 
+import java.util.Collection;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,6 +28,8 @@ public class EmployerOrderListVO {
 	private String authInfo;
 	@ApiModelProperty("家教科目【语文、数学、英语】,多个之间,号分割")
 	private String tutoringType;
+	
+	private Collection <String>tutoringTypeList;
 	@ApiModelProperty("评论")
 	private String comment;
 	@ApiModelProperty("是否评论标识,0 未评论  1 已评论")

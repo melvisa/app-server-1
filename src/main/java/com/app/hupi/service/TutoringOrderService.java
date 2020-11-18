@@ -6,6 +6,8 @@ import com.app.hupi.domain.TutoringOrder;
 
 public interface TutoringOrderService {
 
+	TutoringOrder  queryTutoringOrderByOrderId(String orderId);
+	
 	TutoringOrder addTutoringOrder(TutoringOrder tutoringOrder);
 	
 	TutoringOrder updateTutoringOrder(TutoringOrder tutoringOrder);

@@ -9,4 +9,6 @@ public interface AppointmentService {
 	Appointment addAppointment(String employerId,AppointmentAddVO appointmentAddVO);
 
 	Appointment queryAppointmentBy(String employerId,String tutoringId,String demandId);
+	
+	Appointment queryAppointmentBy(String employerId,String tutoringId);
 }
