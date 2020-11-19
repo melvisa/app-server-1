@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -114,8 +115,9 @@ public class PayContorller {
             parameterMap2.put("package", "Sign=WXPay");
             parameterMap2.put("noncestr", PayCommonUtil.CreateNoncestr());
             // 本来生成的时间戳是13位，但是ios必须是10位，所以截取了一下
-            parameterMap2.put("timestamp",
-                    Long.parseLong(String.valueOf(System.currentTimeMillis()).toString().substring(0, 10)));
+//            parameterMap2.put("timestamp",
+//            		Long.parseLong(String.valueOf(System.currentTimeMillis()).toString().substring(0, 10)));
+            parameterMap2.put("timestamp",new Date().getTime()/1000);
             String sign2 = PayCommonUtil.createSign("UTF-8", parameterMap2);
             parameterMap2.put("sign", sign2);
             resultMap.put("code", "200");
