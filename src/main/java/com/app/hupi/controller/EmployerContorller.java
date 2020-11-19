@@ -68,9 +68,9 @@ public class EmployerContorller {
 		employerUserInfo.setDemandNum(demandNum);
 		employerUserInfo.setHeadImage(employer.getHeadImage());
 		employerUserInfo.setName(employer.getName());
-		employerUserInfo.setVipTag(employer.getLevel());
+		employerUserInfo.setVipTag(employer.getLevel()==null?"0":employer.getLevel());
 		
-		if("1".equals(employer.getLevel())) {
+		if("1".equals(employerUserInfo.getVipTag())) {
 			//计算剩余天数
 			long subDay=DateUtil.getBetweenDays(DateUtil.getFormatedDate(), 
 					employer.getVipTime(), DateUtil.DATE_FORMAT);

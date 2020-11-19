@@ -220,7 +220,7 @@ public class TutoringContorller {
 	
 	
 	@ApiOperation(value = "更新课程安排")
-	@GetMapping("updateSchedule")
+	@PostMapping("updateSchedule")
 	public DataResult<List<ScheduleVo>> updateSchedule(@RequestHeader("token")String token,
 			@RequestBody ScheduleObjVo scheduleObjVo) {
 		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
