@@ -17,7 +17,7 @@ public class Vip {
 	@ApiModelProperty("简单描述")
 	private String desc;
 	@ApiModelProperty("时长")
-	private String duration;
+	private Integer duration;
 	@ApiModelProperty("详细描述")
 	private String detailsDesc;
 	@ApiModelProperty("类型  E 雇主vip  T  家教vip")

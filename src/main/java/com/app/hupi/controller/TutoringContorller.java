@@ -1,5 +1,6 @@
 package com.app.hupi.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,7 +31,6 @@ import com.app.hupi.vo.BankInfoVO;
 import com.app.hupi.vo.EduVo;
 import com.app.hupi.vo.IntroduceVo;
 import com.app.hupi.vo.ScheduleObjVo;
-import com.app.hupi.vo.ScheduleVo;
 import com.app.hupi.vo.SimpleUserVo;
 import com.app.hupi.vo.ToturingUserInfo;
 import com.app.hupi.vo.TutoringAddVO;
@@ -186,7 +186,12 @@ public class TutoringContorller {
 	public DataResult<List<String>> album(@RequestHeader("token")String token) {
 		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
 		String album=tutoring.getAlbum();
-		return  DataResult.getSuccessDataResult(Arrays.asList(album.split(",")));
+		if(album!=null) {
+			return  DataResult.getSuccessDataResult(Arrays.asList(album.split(",")));
+		}
+		else {
+			return DataResult.getSuccessDataResult(new ArrayList<String>());
+		}
 	}
 	
 	
@@ -211,17 +216,17 @@ public class TutoringContorller {
 	
 	@ApiOperation(value = "查询我的课程安排")
 	@GetMapping("querySchedule")
-	public DataResult<List<ScheduleVo>> querySchedule(@RequestHeader("token")String token) {
+	public DataResult<String> querySchedule(@RequestHeader("token")String token) {
 		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
 		String str=tutoring.getSchedule();
-		List<ScheduleVo> list=JsonUtil.parseArray(str, ScheduleVo.class );
-		return  DataResult.getSuccessDataResult(list);
+//		List<ScheduleVo> list=JsonUtil.parseArray(str, ScheduleVo.class );
+		return  DataResult.getSuccessDataResult(str);
 	}
 	
 	
 	@ApiOperation(value = "更新课程安排")
 	@PostMapping("updateSchedule")
-	public DataResult<List<ScheduleVo>> updateSchedule(@RequestHeader("token")String token,
+	public DataResult<String> updateSchedule(@RequestHeader("token")String token,
 			@RequestBody ScheduleObjVo scheduleObjVo) {
 		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
 		String json=JsonUtil.toJson(scheduleObjVo);

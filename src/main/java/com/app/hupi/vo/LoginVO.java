@@ -10,4 +10,6 @@ public class LoginVO {
 	private String number;
 	@ApiModelProperty(value="短信验证码",required=true)
 	private String code;
+	@ApiModelProperty(value="手机唯一标识")
+	private String unicode;
 }

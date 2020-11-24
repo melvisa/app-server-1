@@ -7,6 +7,7 @@ public class AuthOrder {
 	private String id;
 	private String tutoringId;
 	private String createTime;
+	private String money;
 	private String name;
 	private String idcard;
 	private String status;

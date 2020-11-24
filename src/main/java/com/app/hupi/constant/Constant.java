@@ -2,6 +2,26 @@ package com.app.hupi.constant;
 
 public class Constant {
 	
+	// 默认头像-家教
+	public static final String DEFAULT_HEAD_IMAGE_TUTOTING="http://liujiancheng.5gzvip.idcfengye.com/1.png";
+	// 默认头像-雇主
+	public static final String DEFAULT_HEAD_IMAGE_EMPLOYER="http://liujiancheng.5gzvip.idcfengye.com/1.png";
+	
+	public  static final String DEFAULT_MONEY="10";
+	
+	// 待支付
+	public static final String TUTORING_ORDER_STATUS_DAIZHIFU="0";
+	// 待应约
+	public static final String TUTORING_ORDER_STATUS_DAIYINGYUE="1";
+	// 待确认
+	public static final String TUTORING_ORDER_STATUS_DAIQUEREN="2";
+	// 合适
+	public static final String TUTORING_ORDER_STATUS_HESHI="3";
+	// 不合适
+	public static final String TUTORING_ORDER_STATUS_BUHESHI="4";
+	
+	
+	
 	public static final String STRING_SEPARATOR=",";
 	
 	public static final String LOGIN_USER="loginUser";

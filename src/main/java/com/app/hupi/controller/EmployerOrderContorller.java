@@ -124,7 +124,7 @@ public class EmployerOrderContorller {
 		vo.setTutoringTypeList(map.values());
 		vo.setCommentFlag("0");
 		vo.setOrderId(tutoringOrder.getId());
-		if("待确认".equals(tutoringOrder.getStatus())) {
+		if(Constant.TUTORING_ORDER_STATUS_DAIQUEREN.equals(tutoringOrder.getStatus())) {
 			vo.setNumber(tutoring.getNumber());
 		}
 		Comment comment=commentService.queryCommentByOrderId(tutoringOrder.getId());
@@ -148,7 +148,7 @@ public class EmployerOrderContorller {
 		if(!employerId.equals(tutoringOrder.getEmployerId())) {
 			KiteException.throwException("数据异常");
 		}
-		tutoringOrder.setStatus("不合适");
+		tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_BUHESHI);
 		tutoringOrder.setBhsTime(DateUtil.getFormatedDateTime());
 		int i=tutoringOrderMapper.updateById(tutoringOrder);
 		return DataResult.getSuccessDataResult(i);
@@ -168,7 +168,7 @@ public class EmployerOrderContorller {
 		if(!employerId.equals(tutoringOrder.getEmployerId())) {
 			KiteException.throwException("数据异常");
 		}
-		tutoringOrder.setStatus("合适");
+		tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_HESHI);
 		tutoringOrder.setHsTime(DateUtil.getFormatedDateTime());
 		int i=tutoringOrderMapper.updateById(tutoringOrder);
 		return DataResult.getSuccessDataResult(i);
@@ -189,7 +189,7 @@ public class EmployerOrderContorller {
 		if(!employerId.equals(tutoringOrder.getEmployerId())) {
 			KiteException.throwException("数据异常");
 		}
-		tutoringOrder.setStatus("待确认");
+		tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_DAIQUEREN);
 		tutoringOrder.setYyblxTime(DateUtil.getFormatedDateTime());
 		int i=tutoringOrderMapper.updateById(tutoringOrder);
 		return DataResult.getSuccessDataResult(i);

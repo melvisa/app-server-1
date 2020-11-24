@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jdom.JDOMException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,9 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.app.hupi.constant.DataResult;
 import com.app.hupi.enums.PayWay;
+import com.app.hupi.service.AuthOrderService;
+import com.app.hupi.service.TutoringOrderService;
+import com.app.hupi.service.VipOrderService;
 import com.app.hupi.util.AlipayConfig;
 import com.app.hupi.vo.PayParamVo;
 import com.app.hupi.wxpay.ConfigUtil;
@@ -49,6 +53,13 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = {"支付模块"})
 @RestController
 public class PayContorller {
+	
+	@Autowired
+	private VipOrderService vipOrderService;
+	@Autowired
+	private AuthOrderService authOrderService;
+	@Autowired
+	private TutoringOrderService tutoringOrderService;
 	
 	 /**
      * 雇主支付雇佣费，支付方：雇主，收款方：工人
@@ -68,11 +79,11 @@ public class PayContorller {
         String payWay=payParamVo.getPayWay();
        // 支付宝支付
         if("A".equals(payWay)) {
-        	return DataResult.getSuccessDataResult(aliPay(baseUrl, "1", "Hupu",  payParamVo.getOrderId()));
+        	return DataResult.getSuccessDataResult(aliPay(baseUrl, "0.01", "Hupu",  payParamVo.getOrderId()));
         }
         // 微信支付
         else if("W".equals(payWay)) {
-        	return DataResult.getSuccessDataResult(wxPrePay(request, baseUrl, "1", payParamVo.getOrderId()));
+        	return DataResult.getSuccessDataResult(wxPrePay(request, baseUrl, "0.01", payParamVo.getOrderId()));
         }
         return DataResult.getSuccessDataResult("未知支付方式");
 	}
@@ -301,19 +312,15 @@ public class PayContorller {
                 String buyer_id = params.get("buyer_id");
                 // 交易创建时间 格式为yyyy-MM-dd HH:mm:ss
                 String gmt_create = params.get("gmt_create");
-                // ...
-                // 添加自己的业务逻辑，如记录交易成功，支付宝返回的信息
-                // ...
-                int payWay = PayWay.ALiPay.getPayway();
-                int orderId = -1;
-                int orderMoney = (int) Float.parseFloat(amount);
-                List<Integer> idList = null;
-                String info = JSON.toJSON(params).toString();
-                out.print(info);
                 try {
-                    if (out_trade_no.startsWith("wo")) {
-                    } else if (out_trade_no.startsWith("de")) {
-                    } else {
+                    if (out_trade_no.startsWith("VIP")) {
+                    	vipOrderService.afterPayVipOrder(out_trade_no, amount);
+                    } 
+                    else if (out_trade_no.startsWith("AUTH")) {
+                    	authOrderService.afterPayAutoOrder(out_trade_no, amount);
+                    } 
+                    else if(out_trade_no.startsWith("TUTOTING")){
+                    	tutoringOrderService.afterPayTutoringOrder(out_trade_no, out_trade_no);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

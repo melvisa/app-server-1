@@ -40,12 +40,51 @@ public class UserContorller {
 	    	 KiteException.throwException("验证码错误");
 	     }
 	     Tutoring tutoring=tutoringService.queryTutoringByNumber(LoginVO.getNumber());
-	     UserVO userVO=new UserVO();
 	     if(tutoring!=null) {
-	    	 userVO.setId(tutoring.getId());
-	    	 userVO.setNumber(tutoring.getNumber());
-	    	 userVO.setStatus("T");
-	    	 WebUtil.getSession().setAttribute("user", userVO);
+	    	 userInfoVO.setUserType("T");
+	    	 userInfoVO.setTutoring(tutoring);
+	    	 // 生成token 并保存数据库
+	    	 String token=KiteUUID.getId();
+	    	 String tokenTime=DateUtil.getFormatedDateTime();
+	    	 tutoring.setToken(token);
+	    	 tutoring.setTokenTime(tokenTime);
+	    	 Tutoring t= tutoringService.queryTutoringByUnicode(LoginVO.getUnicode());
+	    	 if(t!=null) {
+	    		 t.setUnicode("");
+	    		 tutoringService.updateTutoring(t);
+	    	 }
+	    	 tutoring.setUnicode(LoginVO.getUnicode());
+	    	 tutoringService.updateTutoring(tutoring);
+	    	 return DataResult.getSuccessDataResult(userInfoVO);
+	     }
+	     Employer employer=employerService.queryEmployerByNumber(LoginVO.getNumber());
+	     if(employer==null) {
+	    	 KiteException.throwException("号码未注册,请先进行注册");
+	     }
+	     
+	     Employer e= employerService.queryEmployerByUnicode(LoginVO.getUnicode());
+    	 if(e!=null) {
+    		 e.setUnicode("");
+    		 employerService.updateEmployer(e);
+    	 }
+	     employer.setUnicode(LoginVO.getUnicode());
+	     // 生成token 并保存数据库
+	     String token=KiteUUID.getId();
+    	 String tokenTime=DateUtil.getFormatedDateTime();
+    	 employer.setToken(token);
+    	 employer.setTokenTime(tokenTime);
+    	 employerService.updateEmployer(employer);
+    	 userInfoVO.setUserType("E");
+    	 userInfoVO.setEmployer(employer);
+	     return DataResult.getSuccessDataResult(userInfoVO);
+	}
+	
+	@ApiOperation(value = "用户根据unicode自动登录,返回0 则说明自动登录失败")
+	@GetMapping("/loginByUnicode")
+	public DataResult<Object> loginByUnicode(String unicode) {
+		 UserInfoVO  userInfoVO=new UserInfoVO();
+	     Tutoring tutoring=tutoringService.queryTutoringByUnicode(unicode);
+	     if(tutoring!=null) {
 	    	 userInfoVO.setUserType("T");
 	    	 userInfoVO.setTutoring(tutoring);
 	    	 // 生成token 并保存数据库
@@ -56,9 +95,9 @@ public class UserContorller {
 	    	 tutoringService.updateTutoring(tutoring);
 	    	 return DataResult.getSuccessDataResult(userInfoVO);
 	     }
-	     Employer employer=employerService.queryEmployerByNumber(LoginVO.getNumber());
+	     Employer employer=employerService.queryEmployerByUnicode(unicode);
 	     if(employer==null) {
-	    	 KiteException.throwException("号码未注册,请先进行注册");
+	    	 return DataResult.getSuccessDataResult("0");
 	     }
 	     // 生成token 并保存数据库
 	     String token=KiteUUID.getId();
@@ -66,12 +105,8 @@ public class UserContorller {
     	 employer.setToken(token);
     	 employer.setTokenTime(tokenTime);
     	 employerService.updateEmployer(employer);
-	     userVO.setNumber(employer.getNumber());
-    	 userVO.setStatus("E");
-    	 userVO.setId(employer.getId());
     	 userInfoVO.setUserType("E");
     	 userInfoVO.setEmployer(employer);
-	     WebUtil.getSession().setAttribute("user", userVO);
 	     return DataResult.getSuccessDataResult(userInfoVO);
 	}
 	

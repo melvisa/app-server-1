@@ -25,6 +25,8 @@ public interface TutoringService {
 	
 	Tutoring queryTutoringByNumber(String number);
 	
+	Tutoring queryTutoringByUnicode(String unicode);
+	
 	Tutoring register(TutoringRegisterVO tutoringRegisterVO);
 	
 	TutoringDetailVO queryTutoringDetail(String id,String employerId);

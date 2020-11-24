@@ -5,6 +5,8 @@ import java.util.List;
 import com.app.hupi.domain.TutoringOrder;
 
 public interface TutoringOrderService {
+	
+	void  afterPayTutoringOrder(String orderId,String money);
 
 	TutoringOrder  queryTutoringOrderByOrderId(String orderId);
 	

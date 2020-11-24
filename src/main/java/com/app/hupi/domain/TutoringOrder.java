@@ -21,6 +21,7 @@ public class TutoringOrder {
 	private String earnestFlag;
 	@ApiModelProperty("是否需要支付")
 	private String payFlag;
+	private String money;
 	@ApiModelProperty("支付订单号")
 	private String orderId;
 	@ApiModelProperty("时间")

@@ -78,7 +78,7 @@ public class TutoringServiceImpl implements TutoringService {
 		tutoringOrder.setTutoringId(tutoringId);
 		tutoringOrder.setDemandId(demandId);
 		tutoringOrder.setEmployerId(demand.getEmployerId());
-		tutoringOrder.setOrderId("resume"+KiteUUID.getId());
+		tutoringOrder.setOrderId("TUTOTING"+KiteUUID.getId());
 		tutoringOrder.setEarnestFlag(demand.getEarnestFlag());
 		tutoringOrder.setCreateTime(DateUtil.getFormatedDateTime());
 		String desc="";
@@ -86,7 +86,7 @@ public class TutoringServiceImpl implements TutoringService {
 		// 不需要诚意金
 		if(demand.getEarnestFlag()=="0") {
 			desc="不需要诚意金,直接生成订单";
-			tutoringOrder.setStatus("待确认");
+			tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_DAIQUEREN);
 			tutoringOrder.setPayFlag("0");
 			tutoringOrder.setDesc(desc);
 		}
@@ -98,7 +98,7 @@ public class TutoringServiceImpl implements TutoringService {
 			if(coupon>=1000) {
 				coupon=coupon-1000;
 				tutoringMapper.updateById(tutoring);
-				tutoringOrder.setStatus("待确认");
+				tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_DAIQUEREN);
 				tutoringOrder.setPayFlag("0");
 				desc="需要诚意金,已进行抵扣券抵扣";
 				tutoringOrder.setDesc(desc);
@@ -108,14 +108,14 @@ public class TutoringServiceImpl implements TutoringService {
 				if(totalAccount>=1000) {
 					totalAccount=totalAccount-1000;
 					tutoringMapper.updateById(tutoring);
-					tutoringOrder.setStatus("待确认");
+					tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_DAIQUEREN);
 					tutoringOrder.setPayFlag("0");
 					desc="需要诚意金,已进行账户余额抵扣";
 					tutoringOrder.setDesc(desc);
 				}
 				// 抵扣券账户余额都不够抵扣，需要进行支付
 				else {
-					tutoringOrder.setStatus("待支付");
+					tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_DAIZHIFU);
 					tutoringOrder.setPayFlag("1");
 					desc="需要诚意金,需要支付";
 					payFlag="1";
@@ -161,10 +161,13 @@ public class TutoringServiceImpl implements TutoringService {
 			KiteException.throwException("号码已注册、请直接登录");
 		}
 	    t=new Tutoring();
+	    String yqm=KiteUUID.randomString(6);
 		BeanUtil.copyProperties(tutoringRegisterVO, t);
 		t.setId(KiteUUID.getId());
+		t.setHeadImage(Constant.DEFAULT_HEAD_IMAGE_TUTOTING);
+		t.setName(yqm);
 		t.setCreateTime(DateUtil.getFormatedDateTime());
-		t.setYqmSelf(KiteUUID.randomString(6));
+		t.setYqmSelf(yqm);
 		tutoringMapper.insert(t);
 		return t;
 	}
@@ -182,7 +185,7 @@ public class TutoringServiceImpl implements TutoringService {
 		List<TutoringListVO> result=new ArrayList<>();
 		List<Map<String, Object>> list=tutoringMapper.selectMaps(wrapper);
 		for(Map<String, Object> map:list) {
-			TutoringListVO vo=MapUtil.mapToBean(map, TutoringListVO.class);
+			TutoringListVO vo=MapUtil.mapToBean(map, TutoringListVO.class,"tags");
 			String tags=MapUtil.getString(map, "tags");
 			if(tags!=null) {
 				vo.setTags(Arrays.asList(tags.split(",")));
@@ -332,6 +335,17 @@ public class TutoringServiceImpl implements TutoringService {
 		}
 		return voList;
 	}
+
+
+
+	@Override
+	public Tutoring queryTutoringByUnicode(String unicode) {
+		Tutoring tutoring=new Tutoring();
+		tutoring.setUnicode(unicode);
+		tutoring=tutoringMapper.selectOne(tutoring);
+		return tutoring;
+	}
+	
 	
 	
 }

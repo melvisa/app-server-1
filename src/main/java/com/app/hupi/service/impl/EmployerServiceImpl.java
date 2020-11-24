@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.hupi.constant.Constant;
 import com.app.hupi.domain.Code;
 import com.app.hupi.domain.Employer;
 import com.app.hupi.domain.Tutoring;
@@ -25,6 +26,7 @@ public class EmployerServiceImpl implements EmployerService {
 	
 	@Override
 	public Employer addEmployer(Employer employer) {
+		employer.setHeadImage(Constant.DEFAULT_HEAD_IMAGE_EMPLOYER);
 		employerMapper.insert(employer);
 		return employer;
 	}
@@ -72,6 +74,13 @@ public class EmployerServiceImpl implements EmployerService {
 			employerMapper.updateById(employer);
 		}
 		return employer;
+	}
+
+	@Override
+	public Employer queryEmployerByUnicode(String unicode) {
+		Employer employer=new Employer();
+		employer.setUnicode(unicode);
+		return employerMapper.selectOne(employer);
 	}
 
 }

@@ -8,6 +8,8 @@ public interface EmployerService {
 	Employer queryEmployerByToken(String token);
 	Employer queryEmployerByNumber(String number);
 	
+	Employer queryEmployerByUnicode(String unicode);
+	
 	Employer addEmployer(Employer employer);
 	
 	Employer queryEmployerById(String id);
