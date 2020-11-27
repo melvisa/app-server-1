@@ -83,7 +83,7 @@ public class PayContorller {
         }
         // 微信支付
         else if("W".equals(payWay)) {
-        	return DataResult.getSuccessDataResult(wxPrePay(request, baseUrl, "0.01", payParamVo.getOrderId()));
+        	return DataResult.getSuccessDataResult(wxPrePay(request, baseUrl, "1", payParamVo.getOrderId()));
         }
         return DataResult.getSuccessDataResult("未知支付方式");
 	}

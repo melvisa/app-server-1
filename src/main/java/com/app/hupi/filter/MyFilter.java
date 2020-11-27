@@ -26,7 +26,7 @@ public class MyFilter implements Filter {
 		HttpServletResponse res=(HttpServletResponse) response;
 		 
 		res.setHeader("Access-Control-Allow-Origin", req.getHeader("Origin"));//支持跨域请求
-		res.setHeader("Access-Control-Allow-Headers", "Authorization, Origin, X-Requested-With, Content-Type, Accept,Access-Token");
+		res.setHeader("Access-Control-Allow-Headers", "*");
 		res.setHeader("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS,PATCH");
 		res.setHeader("Access-Control-Allow-Credentials","true");//是否支持cookie跨域
 		chain.doFilter(req, res);

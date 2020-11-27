@@ -14,6 +14,7 @@ import com.app.hupi.service.TutoringService;
 import com.app.hupi.util.CodeUtil;
 import com.app.hupi.util.DateUtil;
 import com.app.hupi.util.KiteUUID;
+import com.app.hupi.util.StringUtil;
 import com.app.hupi.util.WebUtil;
 import com.app.hupi.vo.LoginVO;
 import com.app.hupi.vo.UserInfoVO;
@@ -48,10 +49,12 @@ public class UserContorller {
 	    	 String tokenTime=DateUtil.getFormatedDateTime();
 	    	 tutoring.setToken(token);
 	    	 tutoring.setTokenTime(tokenTime);
-	    	 Tutoring t= tutoringService.queryTutoringByUnicode(LoginVO.getUnicode());
-	    	 if(t!=null) {
-	    		 t.setUnicode("");
-	    		 tutoringService.updateTutoring(t);
+	    	 if(StringUtil.isNotEmpty(LoginVO.getUnicode())){
+	    		 Tutoring t= tutoringService.queryTutoringByUnicode(LoginVO.getUnicode());
+	    		 if(t!=null) {
+	    			 t.setUnicode("");
+	    			 tutoringService.updateTutoring(t);
+	    		 }
 	    	 }
 	    	 tutoring.setUnicode(LoginVO.getUnicode());
 	    	 tutoringService.updateTutoring(tutoring);
@@ -61,12 +64,13 @@ public class UserContorller {
 	     if(employer==null) {
 	    	 KiteException.throwException("号码未注册,请先进行注册");
 	     }
-	     
-	     Employer e= employerService.queryEmployerByUnicode(LoginVO.getUnicode());
-    	 if(e!=null) {
-    		 e.setUnicode("");
-    		 employerService.updateEmployer(e);
-    	 }
+		 if(StringUtil.isNotEmpty(LoginVO.getUnicode())){
+			 Employer e= employerService.queryEmployerByUnicode(LoginVO.getUnicode());
+			 if(e!=null) {
+				 e.setUnicode("");
+				 employerService.updateEmployer(e);
+			 }
+		 }
 	     employer.setUnicode(LoginVO.getUnicode());
 	     // 生成token 并保存数据库
 	     String token=KiteUUID.getId();

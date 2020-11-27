@@ -50,7 +50,7 @@ public class DemandServiceImpl  implements DemandService{
 		demand.setId(KiteUUID.getId());
 		demand.setEmployerId(employerId);
 		demand.setCreateTime(DateUtil.getFormatedDateTime());
-		demand.setStatus("1");
+		demand.setStatus(Constant.DEMAND_STATUS_ZHENGCHENG);
 		LngAndLatVO lngAndLatVO=LngAndLatUtils.getLngAndLat(demand.getAddress());
 		demand.setLat(lngAndLatVO.getLat());
 		demand.setLng(lngAndLatVO.getLng());
@@ -61,7 +61,7 @@ public class DemandServiceImpl  implements DemandService{
 	public List<Demand> listDemandByEmployer(String employerId,int pageNum,int pageSize) {
 		PageHelper.startPage(pageNum, pageSize);
 		EntityWrapper<Demand> wrapper=new EntityWrapper<Demand>();
-		wrapper.eq("employer_id", employerId);
+		wrapper.eq("employer_id", employerId).eq("status", Constant.DEMAND_STATUS_ZHENGCHENG);
 		List<Demand> list= demandMapper.selectList(wrapper);
 		List<Code> codeList=codeService.listCodeByGroup("tutoring_type");
 		for(Demand d:list) {
@@ -119,6 +119,7 @@ public class DemandServiceImpl  implements DemandService{
 			types[0]=tutoringType;
 		}
 		EntityWrapper<Demand> wrapper2=new EntityWrapper<Demand>();
+		wrapper2.eq("status", Constant.DEMAND_STATUS_ZHENGCHENG);
 		for(int i=0;i<types.length;i++) {
 			String s=types[i];
 			if(i==0) {
@@ -129,7 +130,7 @@ public class DemandServiceImpl  implements DemandService{
 			}
 		}
 		if(ListUtil.isNotEmpty(demandIds)) {
-			wrapper2.notIn("id", demandIds);
+			wrapper2.andNew().notIn("id", demandIds);
 		}
 		PageHelper.startPage(pageNum, pageSize);
 		List<Demand> demandList=demandMapper.selectList(wrapper2);

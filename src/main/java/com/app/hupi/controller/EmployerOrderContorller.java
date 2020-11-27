@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.hupi.constant.Constant;
 import com.app.hupi.constant.DataResult;
 import com.app.hupi.domain.Comment;
+import com.app.hupi.domain.Demand;
 import com.app.hupi.domain.Employer;
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.domain.TutoringOrder;
@@ -31,10 +33,7 @@ import com.app.hupi.service.TutoringOrderService;
 import com.app.hupi.util.BeanUtil;
 import com.app.hupi.util.DateUtil;
 import com.app.hupi.util.JsonUtil;
-import com.app.hupi.util.UserUtil;
-import com.app.hupi.util.WebUtil;
 import com.app.hupi.vo.EmployerOrderListVO;
-import com.app.hupi.vo.UserVO;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -161,6 +160,7 @@ public class EmployerOrderContorller {
 	 */
 	@ApiOperation(value = "合适")
 	@PostMapping("/appropriate")
+	@Transactional
 	public DataResult<Integer>  appropriate(@RequestHeader("token")String token,@RequestParam String orderId) {
 		Employer employer=employerService.queryEmployerByToken(token);
 		String employerId=employer.getId();
@@ -168,6 +168,12 @@ public class EmployerOrderContorller {
 		if(!employerId.equals(tutoringOrder.getEmployerId())) {
 			KiteException.throwException("数据异常");
 		}
+		
+		// 修改需求状态
+		Demand demand=demandMapper.selectById(tutoringOrder.getDemandId());
+		demand.setStatus(Constant.DEMAND_STATUS_BEIJIE);
+		demandMapper.updateById(demand);
+		
 		tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_HESHI);
 		tutoringOrder.setHsTime(DateUtil.getFormatedDateTime());
 		int i=tutoringOrderMapper.updateById(tutoringOrder);
