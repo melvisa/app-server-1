@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.app.hupi.constant.DataResult;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -21,7 +23,7 @@ public class FiledController {
 
 	@PostMapping("/fileUpload")
 	@ApiOperation(value = "文件上传 返回文件路径", notes = "文件上传 返回文件路径")
-	public String fileUpload(@RequestParam(value = "file", required = true) MultipartFile fileImage,
+	public DataResult<String> fileUpload(@RequestParam(value = "file", required = true) MultipartFile fileImage,
 			@RequestParam(value = "type", required = true) String type,HttpServletRequest req) throws IOException {
 		String path = System.getProperty("catalina.home") +File.separator+"webapps";
 		String secondPath = "";
@@ -50,7 +52,9 @@ public class FiledController {
 		path = path + secondPath + fileName;
 		fileImage.transferTo(new File(path));
 		// TODO  需要替换
-		return path;
+		String p="http://liujiancheng.5gzvip.idcfengye.com"+ secondPath + fileName;
+		return DataResult.getSuccessDataResult(p);
+		// return path;
 	}
 
 }
