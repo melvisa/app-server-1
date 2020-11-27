@@ -18,6 +18,8 @@ public class Tutoring {
 	private String yqmSelf;
 	@ApiModelProperty("名字")
 	private String name;
+	@ApiModelProperty("身份证号")
+	private String idCard;
 	@ApiModelProperty("头像")
 	private String headImage;
 	@ApiModelProperty("年级种类【小学，初中，高中，大学】，多个之间,号分割")
@@ -62,6 +64,7 @@ public class Tutoring {
 	@ApiModelProperty("纬度")
 	private String lat;
 	@ApiModelProperty("实名认证信息")
+	@Column(name="auth_info",defaultValue="fail")
 	private String authInfo;
 	@ApiModelProperty("银行卡信息")
 	private String bankInfo;

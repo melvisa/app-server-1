@@ -29,8 +29,11 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * 网络工具类，用于网络请求、响应、异常处理等
@@ -128,8 +131,16 @@ public class HttpClientUtil {
      * @param httpUrl 地址
      * @param maps 参数
      */
-    public String sendHttpPost(String httpUrl, Map<String, String> maps) {
+    public String sendHttpPost(String httpUrl, Map<String, String> maps,Map<String, String> headers ) {
         HttpPost httpPost = new HttpPost(httpUrl);// 创建httpPost
+        if (headers != null && !headers.isEmpty()) {
+            Set<Entry<String, String>> sets = headers.entrySet();
+            Iterator<Entry<String, String>> it = sets.iterator();
+            while (it.hasNext()) {
+                Entry<String, String> header = it.next();
+                httpPost.setHeader(header.getKey(), header.getValue());
+            }
+        }
         // 创建参数队列
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         for (String key : maps.keySet()) {
@@ -161,6 +172,7 @@ public class HttpClientUtil {
             // 创建默认的httpClient实例.
             httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
             httpPost.setConfig(requestConfig);
+            
             // 执行请求
             response = httpClient.execute(httpPost);
 
