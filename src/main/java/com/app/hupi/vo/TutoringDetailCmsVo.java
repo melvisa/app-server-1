@@ -1,14 +1,15 @@
-package com.app.hupi.domain;
+package com.app.hupi.vo;
+
+import java.util.List;
 
 import com.gitee.sunchenbin.mybatis.actable.annotation.Column;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+
 @Data
-@ApiModel("家教对象")
-public class Tutoring {
+public class TutoringDetailCmsVo {
 	private String id;
 	@ApiModelProperty("电话号码")
 	private String number;
@@ -22,23 +23,19 @@ public class Tutoring {
 	private String idCard;
 	@ApiModelProperty("头像")
 	private String headImage;
-	@ApiModelProperty("年级种类【小学，初中，高中，大学】，多个之间,号分割")
-	private String classType;
-	@ApiModelProperty("家教科目【语文、数学、英语】,多个之间,号分割")
-	private String tutoringType;
+	@ApiModelProperty("家教科目描述")
+	private List<String> subjectList;
 	@ApiModelProperty("工作经历")
-	private String workExperience;
+	List<WorkExperienceVO>  workExperienceList;
 	@ApiModelProperty("教育经历")
-	private String eduExperience;
+	private EduExperienceVO eduExperience;
 	@ApiModelProperty("个人介绍")
 	private String introduce;
 	@ApiModelProperty("标签")
-	private String tags;
-	@ApiModelProperty("课程表")
-	@Column(name="schedule",length=4000)
+	private  List<String> tags;
 	private String schedule;
-	@ApiModelProperty("相册")
-	@Column(name="album",length=1000)
+	@ApiModelProperty("图片信息")
+	private List<String> images;
 	private String album;
 	@ApiModelProperty("身份级别 0 普通家教 1 vip")
 	private String level;
@@ -57,10 +54,6 @@ public class Tutoring {
 	private String certFlag;
 	@ApiModelProperty("时间")
 	private String createTime;
-	@ApiModelProperty("经度")
-	private String lng;
-	@ApiModelProperty("纬度")
-	private String lat;
 	@ApiModelProperty("实名认证信息")
 	@Column(name="auth_info",defaultValue="fail")
 	private String authInfo;
@@ -72,11 +65,4 @@ public class Tutoring {
 	@ApiModelProperty("代金券")
 	@Column(name="coupon",defaultValue="0")
 	private Integer coupon;
-	
-	private String token;
-	
-	private String tokenTime;
-	
-	private String unicode;
-	
 }

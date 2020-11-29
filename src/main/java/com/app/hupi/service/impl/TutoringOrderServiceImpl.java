@@ -9,8 +9,10 @@ import com.app.hupi.constant.Constant;
 import com.app.hupi.domain.TutoringOrder;
 import com.app.hupi.mapper.TutoringOrderMapper;
 import com.app.hupi.service.TutoringOrderService;
+import com.app.hupi.util.StringUtil;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 
 @Service
@@ -65,6 +67,34 @@ public class TutoringOrderServiceImpl implements TutoringOrderService {
 		// 更新订单 
 		tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_DAIYINGYUE);
 		tutoringOrderMapper.updateById(tutoringOrder);
+	}
+
+	@Override
+	public PageInfo<TutoringOrder> pageInfoOrderWithTutoring(int pageNum, int pageSize, String tutoringId,
+			String status) {
+		EntityWrapper<TutoringOrder> wrapper=new EntityWrapper<>();
+		wrapper.eq("tutoring_id", tutoringId);
+		if(StringUtil.isNotEmpty(status)) {
+			wrapper.eq("status", status);
+		}
+		PageHelper.startPage(pageNum,pageSize);
+		List<TutoringOrder> list= tutoringOrderMapper.selectList(wrapper);
+		PageInfo<TutoringOrder> pageInfo=new PageInfo<>(list);
+		return pageInfo;
+	}
+
+	@Override
+	public PageInfo<TutoringOrder> pageInfoOrderWithEmployer(int pageNum, int pageSize, String employerId,
+			String status) {
+		EntityWrapper<TutoringOrder> wrapper=new EntityWrapper<>();
+		wrapper.eq("employer_id", employerId);
+		if(StringUtil.isNotEmpty(status)) {
+			wrapper.eq("status", status);
+		}
+		PageHelper.startPage(pageNum,pageSize);
+		List<TutoringOrder> list= tutoringOrderMapper.selectList(wrapper);
+		PageInfo<TutoringOrder> pageInfo=new PageInfo<>(list);
+		return pageInfo;
 	}
 
 	

@@ -65,7 +65,6 @@ public class AuthOrderContorller {
 		}
 		
 	public String  auth (AuthOrder authOrder) {
-		
 		if(authOrder!=null) {
 			String name=authOrder.getName();
 			String idcard=authOrder.getIdcard();

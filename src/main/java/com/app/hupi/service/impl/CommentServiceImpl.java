@@ -11,10 +11,12 @@ import com.app.hupi.domain.Employer;
 import com.app.hupi.mapper.CommentMapper;
 import com.app.hupi.mapper.EmployerMapper;
 import com.app.hupi.service.CommentService;
+import com.app.hupi.util.BeanUtil;
 import com.app.hupi.util.ListUtil;
 import com.app.hupi.vo.CommentVo;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 
 @Service
@@ -76,5 +78,31 @@ public class CommentServiceImpl implements CommentService {
 		Comment c=new Comment();
 		c.setOrderId(orderId);
 		return commnetMapper.selectOne(c);
+	}
+
+	@Override
+	public PageInfo<CommentVo> pageInfo(String tutoringId, int pageNum, int pageSize) {
+		EntityWrapper<Comment> wrapper=new EntityWrapper<Comment>();
+		wrapper.eq("tutoring_id", tutoringId).orderBy("create_time desc");
+		PageHelper.startPage(pageNum, pageSize);
+		List<Comment> list=commnetMapper.selectList(wrapper);
+		PageInfo<Comment> pageInfo=new PageInfo<Comment>(list);
+		PageInfo<CommentVo> info=new PageInfo<CommentVo>();
+		BeanUtil.copyProperties(pageInfo, info);
+		
+		List<CommentVo>  voList=new ArrayList<>();
+		for(Comment comment:list) {
+			CommentVo vo=new CommentVo();
+			vo.setCommentTime(comment.getCreateTime());
+			vo.setContent(comment.getContent());
+			Employer employer=employerMapper.selectById(comment.getEmployerId());
+			if(employer!=null) {
+				vo.setEmployerImage(employer.getHeadImage());
+				vo.setEmployerName(employer.getName());
+			}
+			voList.add(vo);
+		}
+		info.setList(voList);
+		return info;
 	}
 }

@@ -33,8 +33,10 @@ import com.app.hupi.util.StringUtil;
 import com.app.hupi.util.WebUtil;
 import com.app.hupi.vo.DeliveryResumeVO;
 import com.app.hupi.vo.EduExperienceVO;
+import com.app.hupi.vo.SimpleTutoring;
 import com.app.hupi.vo.SimpleUserVo;
 import com.app.hupi.vo.TutoringAddVO;
+import com.app.hupi.vo.TutoringDetailCmsVo;
 import com.app.hupi.vo.TutoringDetailVO;
 import com.app.hupi.vo.TutoringListVO;
 import com.app.hupi.vo.TutoringRegisterVO;
@@ -42,6 +44,7 @@ import com.app.hupi.vo.UserVO;
 import com.app.hupi.vo.WorkExperienceVO;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 
 @Service
@@ -262,28 +265,29 @@ public class TutoringServiceImpl implements TutoringService {
 		//vo.setTutoringIdentity(codeService.queryCodeValueByGroupAndValue("tutoring_identity", tutoring.getTutoringIdentity()));
 		// 个性标签和评价字段，
 		// 是否关注
-		Attention attention=attentionService.queryAttention(employerId, tutoring.getId());
-		if(attention==null) {
-			vo.setAttentionTag("0");
-		}
-		else {
-			vo.setAttentionTag("1");
+		if(StringUtil.isNotEmpty(employerId)) {
+			Attention attention=attentionService.queryAttention(employerId, tutoring.getId());
+			if(attention==null) {
+				vo.setAttentionTag("0");
+			}
+			else {
+				vo.setAttentionTag("1");
+			}
 		}
 		String tags=tutoring.getTags();
 		if(tags!=null) {
 			vo.setTags(Arrays.asList(tags.split(",")));
 		}
 		// 是否预约
-		Appointment appointment=appointmentService.queryAppointmentBy(employerId, tutoring.getId());
-		
-		if(appointment==null) {
-			vo.setAppointmenTag("0");
+		if(StringUtil.isNotEmpty(employerId)) {
+			Appointment appointment=appointmentService.queryAppointmentBy(employerId, tutoring.getId());
+			if(appointment==null) {
+				vo.setAppointmenTag("0");
+			}
+			else {
+				vo.setAppointmenTag("1");
+			}
 		}
-		else {
-			vo.setAppointmenTag("1");
-		}
-		
-		
 		return vo;
 	}
 	@Override
@@ -344,6 +348,61 @@ public class TutoringServiceImpl implements TutoringService {
 		tutoring.setUnicode(unicode);
 		tutoring=tutoringMapper.selectOne(tutoring);
 		return tutoring;
+	}
+
+
+
+	@Override
+	public PageInfo<SimpleTutoring> pageInfo(int pageNum, int pageSize, String name, String number) {
+		PageHelper.startPage(pageNum, pageSize);
+		EntityWrapper<Tutoring> wrapper=new EntityWrapper();
+		if(StringUtil.isNotEmpty(number)) {
+			wrapper.eq("number", number);
+		}
+		if(StringUtil.isNotEmpty(name)) {
+			wrapper.eq("name", name);
+		}
+		List<Tutoring> list=tutoringMapper.selectList(wrapper);
+		PageInfo<Tutoring> pageInfo=new PageInfo<>(list);
+		PageInfo<SimpleTutoring> info=new PageInfo<>();
+		BeanUtil.copyProperties(pageInfo, info);
+		List<SimpleTutoring>simpleList=BeanUtil.copyPropsForList(list, SimpleTutoring.class);
+		info.setList(simpleList);
+		return info;
+	}
+
+
+
+	@Override
+	public TutoringDetailCmsVo queryTutoringDetailCmsVo(String id) {
+		Tutoring  tutoring=tutoringMapper.selectById(id);
+		TutoringDetailCmsVo  vo=new TutoringDetailCmsVo();
+		BeanUtil.copyProperties(tutoring, vo);
+		List<WorkExperienceVO> workExperienceList=JsonUtil.parseArray(tutoring.getWorkExperience(), WorkExperienceVO.class);
+		// 教育经历
+		EduExperienceVO eduExperience=JsonUtil.parseObject(tutoring.getEduExperience(), EduExperienceVO.class);
+		vo.setWorkExperienceList(workExperienceList);
+		vo.setEduExperience(eduExperience);
+		// 证书
+		if(tutoring.getAuthInfo()==null) {
+			vo.setAuthInfo("未实名认证");
+		}
+		else {
+			vo.setAuthInfo("已实名认证");
+		}
+		// images相册
+		String album=tutoring.getAlbum();
+		if(album!=null) {
+			vo.setImages(Arrays.asList(album.split(",")));
+		}
+		
+		String tags=tutoring.getTags();
+		if(tags!=null) {
+			vo.setTags(Arrays.asList(tags.split(",")));
+		}
+		List<String>subs=changeSubjectList(tutoring.getTutoringType());
+		vo.setSubjectList(subs);
+		return vo;
 	}
 	
 	

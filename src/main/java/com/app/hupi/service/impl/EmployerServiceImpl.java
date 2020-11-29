@@ -1,18 +1,20 @@
 package com.app.hupi.service.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.hupi.constant.Constant;
-import com.app.hupi.domain.Code;
 import com.app.hupi.domain.Employer;
-import com.app.hupi.domain.Tutoring;
 import com.app.hupi.exception.KiteException;
 import com.app.hupi.mapper.EmployerMapper;
 import com.app.hupi.service.EmployerService;
+import com.app.hupi.util.BeanUtil;
 import com.app.hupi.util.DateUtil;
+import com.app.hupi.util.StringUtil;
+import com.app.hupi.vo.EmployerCmsVo;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -81,6 +83,26 @@ public class EmployerServiceImpl implements EmployerService {
 		Employer employer=new Employer();
 		employer.setUnicode(unicode);
 		return employerMapper.selectOne(employer);
+	}
+
+	@Override
+	public PageInfo<EmployerCmsVo> pageInfo(int pageNum, int pageSize, String name, String number) {
+		PageHelper.startPage(pageNum, pageSize);
+		EntityWrapper<Employer> wrapper=new EntityWrapper<Employer>();
+		
+		if(StringUtil.isNotEmpty(name)) {
+			wrapper.eq("name", name);
+		}
+		else if(StringUtil.isNotEmpty(number)) {
+			wrapper.eq("number", number);
+		}
+		List<Employer> list=employerMapper.selectList(wrapper);
+		PageInfo<Employer> info=new PageInfo<>(list);
+		PageInfo<EmployerCmsVo> pageInfo=new PageInfo<>();
+		BeanUtil.copyProperties(info, pageInfo);
+		List<EmployerCmsVo>voList=BeanUtil.copyPropsForList(list, EmployerCmsVo.class);
+		pageInfo.setList(voList);
+		return pageInfo;
 	}
 
 }

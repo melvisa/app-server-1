@@ -31,8 +31,8 @@ public class AdminContorller {
 	@Autowired
 	private AdminMapper adminMapper;
 	
-	@ApiOperation(value = "管理员列表")
-	@GetMapping("/listAdmin")
+//	@ApiOperation(value = "管理员列表")
+//	@GetMapping("/listAdmin")
 	public DataResult<PageInfo<Admin>> listWithdrawal(int pageIndex,int pageSize) {
 		//如果不是超级管理员 不允许查看
 		List<Admin> list =new ArrayList<>();
@@ -67,7 +67,7 @@ public class AdminContorller {
 	
 	
 	@ApiOperation(value = "管理员账号新增")
-	@GetMapping(value="/addAdmin",produces="application/json")
+	@GetMapping(value="/addAdmin")
 	public DataResult<Admin> addAdmin(String username,String password) {
 		Admin admin=new Admin();
 		admin.setUsername(username);

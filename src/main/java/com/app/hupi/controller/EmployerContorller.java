@@ -17,7 +17,9 @@ import com.app.hupi.service.EmployerService;
 import com.app.hupi.util.DateUtil;
 import com.app.hupi.util.KiteUUID;
 import com.app.hupi.vo.EmployerAddVO;
+import com.app.hupi.vo.EmployerCmsVo;
 import com.app.hupi.vo.EmployerUserInfo;
+import com.github.pagehelper.PageInfo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,6 +38,16 @@ public class EmployerContorller {
 	
 	@Autowired
 	private  AttentionService attentionService;
+	
+	
+	@ApiOperation(value = "分页查询雇主列表")
+	@PostMapping("/pageInfo")
+	public DataResult<PageInfo<EmployerCmsVo>> pageInfo(int pageNum,int pageSize,String name,String number) {
+		PageInfo<EmployerCmsVo> pageInfo=employerService.pageInfo(pageNum, pageSize, name, number);
+		return DataResult.getSuccessDataResult(pageInfo);
+	}
+	
+	
 	
 	
 	@ApiOperation(value = "雇员注册")

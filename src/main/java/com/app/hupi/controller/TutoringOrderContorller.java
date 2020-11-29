@@ -29,6 +29,7 @@ import com.app.hupi.util.WebUtil;
 import com.app.hupi.vo.DeliveryResumeVO;
 import com.app.hupi.vo.DemandListVO;
 import com.app.hupi.vo.UserVO;
+import com.github.pagehelper.PageInfo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -57,6 +58,40 @@ public class TutoringOrderContorller {
 	@Autowired
 	private TutoringService tutoringService;
 	
+	
+//	@ApiOperation(value = "查询家教订单列表")
+//	@GetMapping("/pageTutoringOrder")
+//	@ApiImplicitParams({
+//	        @ApiImplicitParam(name = "pageNum", value = "第几页", required = true, dataType = "int"),
+//	        @ApiImplicitParam(name = "pageSize", value = "每页记录数", required = true, dataType = "int"),
+//	        @ApiImplicitParam(name = "status", value = "状态", required = true, dataType = "String")
+//	 })
+//	public DataResult<List<Demand>> pageTutoringOrder(
+//			@RequestParam(name="pageNum",required=true)int pageNum,
+//			@RequestParam(name="pageSize",required=true)int pageSize,
+//		   String tutoringId,String status) {
+//		PageInfo<TutoringOrder>  pageInfo=tutoringOrderService.pageInfoOrderWithTutoring(pageNum, pageSize, tutoringId, status);
+//		List<Demand> demandList=new ArrayList<>();
+//		List<Code> codeList=codeService.listCodeByGroup("tutoring_type");
+//		for(TutoringOrder t:list) {
+//			Demand d=demandMapper.selectById(t.getDemandId());
+//				String className=d.getClassName();
+//				d.setClassName(changeClassName(className,codeList));
+//				String subs=d.getSubs();
+//				String[] subList=subs.split(",");
+//				String str="";
+//				for(String s:subList) {
+//					String clasName=s.substring(0, s.lastIndexOf("_"));
+//					String s2=codeService.queryCodeValueByGroupAndValue(clasName, s).split(",")[0];
+//					str=str+s2;
+//				}
+//				d.setSubs(str);
+//				demandList.add(d);
+//			}
+//		return DataResult.getSuccessDataResult(demandList);
+//	}
+//	
+//	
 	/**
 	 * 
 	 * @param demandId

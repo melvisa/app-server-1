@@ -4,14 +4,21 @@ import java.util.List;
 
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.vo.DeliveryResumeVO;
+import com.app.hupi.vo.SimpleTutoring;
 import com.app.hupi.vo.SimpleUserVo;
 import com.app.hupi.vo.TutoringAddVO;
+import com.app.hupi.vo.TutoringDetailCmsVo;
 import com.app.hupi.vo.TutoringDetailVO;
 import com.app.hupi.vo.TutoringListVO;
 import com.app.hupi.vo.TutoringRegisterVO;
+import com.github.pagehelper.PageInfo;
 
 public interface TutoringService {
 
+	
+	TutoringDetailCmsVo queryTutoringDetailCmsVo(String  id);
+	
+	PageInfo<SimpleTutoring> pageInfo(int pageNum,int pageSize,String name ,String number);
 	
 	List<SimpleUserVo> queryByYqm(String yqm);
 	

@@ -19,6 +19,7 @@ import com.app.hupi.domain.Tutoring;
 import com.app.hupi.exception.KiteException;
 import com.app.hupi.mapper.TutoringOrderMapper;
 import com.app.hupi.service.CodeService;
+import com.app.hupi.service.CommentService;
 import com.app.hupi.service.EmployerService;
 import com.app.hupi.service.TutoringOrderService;
 import com.app.hupi.service.TutoringService;
@@ -28,17 +29,21 @@ import com.app.hupi.util.DateUtil;
 import com.app.hupi.util.JsonUtil;
 import com.app.hupi.util.StringUtil;
 import com.app.hupi.vo.BankInfoVO;
+import com.app.hupi.vo.CommentVo;
 import com.app.hupi.vo.EduVo;
 import com.app.hupi.vo.IntroduceVo;
 import com.app.hupi.vo.ScheduleObjVo;
+import com.app.hupi.vo.SimpleTutoring;
 import com.app.hupi.vo.SimpleUserVo;
 import com.app.hupi.vo.ToturingUserInfo;
 import com.app.hupi.vo.TutoringAddVO;
 import com.app.hupi.vo.TutoringBaseInfo;
+import com.app.hupi.vo.TutoringDetailCmsVo;
 import com.app.hupi.vo.TutoringDetailVO;
 import com.app.hupi.vo.TutoringListVO;
 import com.app.hupi.vo.TutoringRegisterVO;
 import com.app.hupi.vo.WorkVo;
+import com.github.pagehelper.PageInfo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -60,6 +65,30 @@ public class TutoringContorller {
 	private TutoringOrderService tutoringOrderService;
 	@Autowired
 	private TutoringOrderMapper tutoringOrderMapper;
+	@Autowired
+	private CommentService  commentService;
+	
+	@ApiOperation(value = "分页查询家教评论")
+	@GetMapping("/pageComment")
+	public DataResult<PageInfo<CommentVo>> pageComment(int pageNum,int pageSize,String id) {
+		return DataResult.getSuccessDataResult(commentService.
+				pageInfo(id, pageNum, pageSize));
+	}
+	@ApiOperation(value = "分页查询家教列表")
+	@GetMapping("pageTutoring")
+	public DataResult<PageInfo<SimpleTutoring>> pageTutoring(int pageNum,int pageSize,String   number ,String name) {
+		PageInfo<SimpleTutoring> pageInfo=tutoringService.pageInfo(pageNum, pageSize, name, number);
+		return  DataResult.getSuccessDataResult(pageInfo);
+	}
+	
+	@ApiOperation(value = "管理后台查询家教详情")
+	@GetMapping("/queryTutoringDetailCms")
+	public DataResult<TutoringDetailCmsVo> queryTutoringDetailCms(@RequestParam(name="id",required=true)String id) {
+		TutoringDetailCmsVo tutoring=tutoringService.queryTutoringDetailCmsVo(id);
+		return DataResult.getSuccessDataResult(tutoring);
+	}
+	
+	
 	
 	@ApiOperation(value = "银行卡绑定")
 	@PostMapping("/bindBank")
