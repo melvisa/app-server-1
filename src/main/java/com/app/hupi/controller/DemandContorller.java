@@ -18,7 +18,6 @@ import com.app.hupi.domain.Tutoring;
 import com.app.hupi.service.DemandService;
 import com.app.hupi.service.EmployerService;
 import com.app.hupi.service.TutoringService;
-import com.app.hupi.util.UserUtil;
 import com.app.hupi.vo.DemandAddVO;
 import com.app.hupi.vo.DemandListVO;
 
@@ -44,7 +43,7 @@ public class DemandContorller {
 	
 	
 	@ApiOperation(value = "需求发布校验 返回1 可以发帖 返回0  不可以发帖")
-	@PostMapping("/checkDemand")
+	@GetMapping("/checkDemand")
 	public DataResult<String> checkDemand(@RequestHeader("token")String token) {
 		Employer employer=employerService.queryEmployerByToken(token);
 		String level=employer.getLevel();
