@@ -1,5 +1,7 @@
 package com.app.hupi.domain;
 
+import com.gitee.sunchenbin.mybatis.actable.annotation.Column;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -22,6 +24,10 @@ public class Vip {
 	private String detailsDesc;
 	@ApiModelProperty("类型  E 雇主vip  T  家教vip")
 	private String type;
+	@ApiModelProperty("优惠券数量")
+	private Integer couponNum;
+	@ApiModelProperty("赠送优惠券额度")
+	private Integer coupon;
 	@ApiModelProperty("未删除 1 删除")
 	private int isDel;
 }

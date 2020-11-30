@@ -86,6 +86,12 @@ public class VipOrderServiceImpl implements VipOrderService {
 				tutoring.setLevel("1");
 				tutoring.setVipTime(vipTime);
 				tutoring.setVipCreateTime(DateUtil.getFormatedDateTime());
+				Integer num=vip.getCouponNum();
+				Integer coupon=vip.getCoupon();
+				// 增加代金券额度
+				if(num!=null) {
+					tutoring.setCoupon(tutoring.getCoupon()+(num*coupon));
+				}
 				tutoringMapper.updateById(tutoring);
 			}
 		}

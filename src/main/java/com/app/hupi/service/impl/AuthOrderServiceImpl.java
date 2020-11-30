@@ -28,6 +28,7 @@ public class AuthOrderServiceImpl implements AuthOrderService {
 		authOrder.setIdcard(idcard);
 		authOrder.setMoney("1");
 		authOrder.setName(name);
+		authOrder.setTutoringId(tutoringId);
 		authOrder.setStatus("0");
 		authOrderMapper.insert(authOrder);
 		return authOrder;

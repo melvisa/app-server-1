@@ -47,7 +47,7 @@ public class TutoringOrderServiceImpl implements TutoringOrderService {
 	@Override
 	public List<TutoringOrder> listTutoringOrderWithEmployer(int pageNum,int pageSize,String employerId, String status) {
 		EntityWrapper<TutoringOrder> wrapper=new EntityWrapper<>();
-		wrapper.eq("employer_id", employerId).eq("status", status);
+		wrapper.eq("employer_id", employerId).eq("status", status).orderBy("create_time");
 		PageHelper.startPage(pageNum,pageSize);
 		return tutoringOrderMapper.selectList(wrapper);
 	}

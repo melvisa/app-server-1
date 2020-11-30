@@ -75,7 +75,10 @@ public class PayContorller {
     public DataResult<Object> orderString(HttpServletRequest request,
     		HttpServletResponse response,  @RequestBody PayParamVo payParamVo) {
         String baseUrl = request.getRequestURL().toString();
-        baseUrl = baseUrl.substring(0, baseUrl.indexOf("app-server") + "app-server".length());
+        if(baseUrl.contains("app-server")) {
+        	baseUrl = baseUrl.substring(0, baseUrl.indexOf("app-server") + "app-server".length());
+        }
+        baseUrl=" http://liujiancheng.5gzvip.idcfengye.com";
         String payWay=payParamVo.getPayWay();
        // 支付宝支付
         if("A".equals(payWay)) {
@@ -235,26 +238,17 @@ public class PayContorller {
                 List<Integer> idList = null;
                 String info = JSON.toJSONString(packageParams);
                 try {
-                    if (out_trade_no.startsWith("wo")) {
-                        orderId = this.decodeOrderId("wo", out_trade_no);
-                    } else if (out_trade_no.startsWith("de")) {
-                        idList = this.decodeOrderId("de", "_", out_trade_no);
-                    } else {
-                        orderId = Integer.parseInt(out_trade_no);
-                    }
+                	 if (out_trade_no.startsWith("VIP")) {
+                     	vipOrderService.afterPayVipOrder(out_trade_no, total_fee);
+                     } 
+                     else if (out_trade_no.startsWith("AUTH")) {
+                     	authOrderService.afterPayAutoOrder(out_trade_no, total_fee);
+                     } 
+                     else if(out_trade_no.startsWith("TUTOTING")){
+                     	tutoringOrderService.afterPayTutoringOrder(out_trade_no, total_fee);
+                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-                if (orderId < 0 && CollectionUtils.isEmpty(idList)) {
-                    resXml = "<xml>" + "<return_code><![CDATA[FAIL]]></return_code>" + "<return_msg><![CDATA[参数错误]]></return_msg>" + "</xml> ";
-                } else {
-                    if (out_trade_no.startsWith("wo")) {
-                        orderId = this.decodeOrderId("wo", out_trade_no);
-                    } else if (out_trade_no.startsWith("de")) {
-                        // 增加一条浏览记录
-                    } else {
-                    }
-                    resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>" + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
                 }
 
             } else {

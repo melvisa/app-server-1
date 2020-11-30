@@ -78,9 +78,11 @@ public class EmployerOrderContorller {
 		
 		List<TutoringOrder> list=tutoringOrderService.listTutoringOrderWithEmployer(pageNum, pageSize, employerId, status);
 		List<EmployerOrderListVO> voList=new ArrayList<>();
+		boolean isFirst=true;
 		for(TutoringOrder tutoringOrder:list) {
-			EmployerOrderListVO vo=changeEmployerOrderListVO(tutoringOrder);
+			EmployerOrderListVO vo=changeEmployerOrderListVO(tutoringOrder,isFirst);
 			voList.add(vo);
+			isFirst=false;
 		}
 		return DataResult.getSuccessDataResult(voList);
 	}
@@ -91,7 +93,7 @@ public class EmployerOrderContorller {
 		System.out.println(s.substring(0, s.lastIndexOf("_", s.length())));
 	}
 	
-	private EmployerOrderListVO changeEmployerOrderListVO(TutoringOrder tutoringOrder) {
+	private EmployerOrderListVO changeEmployerOrderListVO(TutoringOrder tutoringOrder,boolean isFirst) {
 		String tutoringId=tutoringOrder.getTutoringId();
 		Tutoring tutoring=tutoringMapper.selectById(tutoringId);
 		EmployerOrderListVO vo=new EmployerOrderListVO();
@@ -122,8 +124,16 @@ public class EmployerOrderContorller {
 		vo.setTutoringTypeList(map.values());
 		vo.setCommentFlag("0");
 		vo.setOrderId(tutoringOrder.getId());
+		// 如果是待确状态  则需要返回手机号码
+		// 如果雇主是会员  则返回所有的手机号码  不是会员 是返回选择的第一个雇主的手机号码
+		//其他返回一个提示
 		if(Constant.TUTORING_ORDER_STATUS_DAIQUEREN.equals(tutoringOrder.getStatus())) {
-			vo.setNumber(tutoring.getNumber());
+			if("1".equals(tutoring.getLevel())||isFirst) {
+				vo.setNumber(tutoring.getNumber());
+			}
+			else {
+				vo.setNumber("请开通会员查看");
+			}
 		}
 		Comment comment=commentService.queryCommentByOrderId(tutoringOrder.getId());
 		if(comment!=null) {

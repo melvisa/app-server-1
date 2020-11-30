@@ -42,6 +42,25 @@ public class DemandContorller {
 	@Autowired
 	private TutoringService toturingService;
 	
+	
+	@ApiOperation(value = "需求发布校验 返回1 可以发帖 返回0  不可以发帖")
+	@PostMapping("/checkDemand")
+	public DataResult<String> checkDemand(@RequestHeader("token")String token) {
+		Employer employer=employerService.queryEmployerByToken(token);
+		String level=employer.getLevel();
+		if("1".equals(level)) {
+			return DataResult.getSuccessDataResult("1");
+		}
+		else {
+			List<Demand> list=demandService.listDemandByEmployer(employer.getId(), 1, Integer.MAX_VALUE);
+		     if(list.size()>1) {
+		    	 return DataResult.getSuccessDataResult("0");
+		     }
+		}
+		return DataResult.getSuccessDataResult("1");
+	}
+	
+	
 	@ApiOperation(value = "新增需求")
 	@PostMapping("/addDemand")
 	public DataResult<Demand> addDemand(@RequestHeader("token")String token,@RequestBody DemandAddVO demandAddVO) {
