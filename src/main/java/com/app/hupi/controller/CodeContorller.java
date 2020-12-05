@@ -34,8 +34,4 @@ public class CodeContorller {
 		return DataResult.getSuccessDataResult(codeService.listCodeByGroup(group));
 	}
 	
-	
-	
-	
-	
 }

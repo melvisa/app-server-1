@@ -1,6 +1,7 @@
 package com.app.hupi.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.vo.DeliveryResumeVO;
@@ -15,12 +16,20 @@ import com.github.pagehelper.PageInfo;
 
 public interface TutoringService {
 
+
+	/**
+	 * 佣金分配
+	 */
+	void  updateTutoringAccount(String  tutoringId,String money);
+	
 	
 	TutoringDetailCmsVo queryTutoringDetailCmsVo(String  id);
 	
 	PageInfo<SimpleTutoring> pageInfo(int pageNum,int pageSize,String name ,String number);
 	
 	List<SimpleUserVo> queryByYqm(String yqm);
+	
+	Tutoring queryOneByYqm(String yqm);
 	
 	Tutoring  queryTutoringByToken(String token);
 	
@@ -39,4 +48,6 @@ public interface TutoringService {
 	TutoringDetailVO queryTutoringDetail(String id,String employerId);
 	
 	List<TutoringListVO> listTutoringList(String employerId,String tutoringType,String lng,String lat,int pageIndex,int pageSize);
+	
+	List<TutoringListVO> listTutoringListByParams(int pageIndex,int pageSize,Map<String,String>params);
 }

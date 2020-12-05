@@ -12,12 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.hupi.constant.DataResult;
 import com.app.hupi.constant.HupiConfig;
 import com.app.hupi.domain.AuthOrder;
+import com.app.hupi.domain.CouponDetail;
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.mapper.AuthOrderMapper;
 import com.app.hupi.mapper.TutoringMapper;
 import com.app.hupi.service.AuthOrderService;
+import com.app.hupi.service.CouponDetailService;
 import com.app.hupi.service.TutoringService;
+import com.app.hupi.util.DateUtil;
 import com.app.hupi.util.HttpClientUtil;
+import com.app.hupi.util.KiteUUID;
+import com.app.hupi.util.StringUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +40,8 @@ public class AuthOrderContorller {
 	private TutoringMapper  tutoringMapper;
 	@Autowired
 	private AuthOrderMapper autoOrderMapper;
+	@Autowired
+	private CouponDetailService couponDetailService;
 	
 	@ApiOperation(value = "实名认证支付订单")
 	@GetMapping("/authOrder")
@@ -59,6 +66,24 @@ public class AuthOrderContorller {
 			String authInfo="success";
 			tutoring.setAuthInfo(authInfo);
 			int i=tutoringMapper.updateById(tutoring);
+			
+			// 实名认证成功 给推荐人10元代金券
+			String  yqm=tutoring.getYqm();
+			if(StringUtil.isNotEmpty(yqm)) {
+				Tutoring tjr=	tutoringService.queryOneByYqm(yqm);
+				tjr.setCoupon(tjr.getCoupon()+10);
+				tutoringMapper.updateById(tjr);
+				// 增加代金券明细
+				CouponDetail  couponDetail=new CouponDetail();
+				couponDetail.setId(KiteUUID.getId());
+				couponDetail.setCreateTime(DateUtil.getFormatedDateTime());
+				couponDetail.setDesc("推荐人："+authOrder.getName()+"实名注册");
+				couponDetail.setType("+");
+				couponDetail.setAmount(10);
+				couponDetail.setUserId(tutoring.getId());
+				couponDetailService.addCouponDetail(couponDetail);
+			}
+			
 			return  DataResult.getSuccessDataResult(i+"");
 		}
 		return DataResult.getSuccessDataResult(result);

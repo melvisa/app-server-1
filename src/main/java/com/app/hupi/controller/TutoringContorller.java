@@ -2,7 +2,9 @@ package com.app.hupi.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -135,13 +137,55 @@ public class TutoringContorller {
 	public DataResult<List<TutoringListVO>> listTutoringList(
 			@RequestHeader("token")String token,
 			@RequestParam(name="tutoringType",required=true)String tutoringType,
-			
 			@RequestParam(name="pageNum",required=true)int pageNum,
 			@RequestParam(name="pageSize",required=true)int pageSize) {
 		Employer employer=employerService.queryEmployerByToken(token);
 		List<TutoringListVO> list=tutoringService.listTutoringList(employer.getId(),tutoringType, "", "", pageNum, pageSize);
 		return DataResult.getSuccessDataResult(list);
 	}
+	
+	@ApiOperation(value = "条件查询家教列表")
+	@GetMapping("/listTutoringListByParams")
+	 @ApiImplicitParams({
+		    @ApiImplicitParam(name = "classType", value = "家教类型", dataType = "String"),
+		    @ApiImplicitParam(name = "tutoringType", value = "家教类型", dataType = "String"),
+		    @ApiImplicitParam(name = "tutoringIdentity", value = "家教类型", dataType = "String"),
+		    @ApiImplicitParam(name = "sex", value = "性别", dataType = "String"),
+	        @ApiImplicitParam(name = "pageNum", value = "第几页", required = true, dataType = "int"),
+	        @ApiImplicitParam(name = "pageSize", value = "每页记录数", required = true, dataType = "int")
+	 })
+	public DataResult<List<TutoringListVO>> listTutoringListByParams(
+			@RequestParam(name="classType")String classType,
+			@RequestParam(name="tutoringType")String tutoringType,
+			@RequestParam(name="tutoringIdentity")String tutoringIdentity,
+			@RequestParam(name="sex")String sex,
+			@RequestParam(name="pageNum",required=true)int pageNum,
+			@RequestParam(name="pageSize",required=true)int pageSize) {
+		
+		Map<String,String>params=new HashMap<String,String>();
+		params.put("classType", classType);
+		params.put("tutoringType", tutoringType);
+		params.put("tutoringIdentity", tutoringIdentity);
+		params.put("sex", sex);
+		List<TutoringListVO> list=tutoringService.listTutoringListByParams(pageNum, pageSize, params);
+		return DataResult.getSuccessDataResult(list);
+	}
+	
+	// 判断是否可以代金券购买
+	@ApiOperation(value = "判断是否可以代金券购买,返回1 满足代金券购买条件 2 不满足")
+	@GetMapping("/checkCoupon")
+	public DataResult<String> checkCoupon(@RequestHeader("token")String token,@RequestParam(name="id",required=true)String id) {
+		Tutoring tutoring=tutoringService.queryTutoringByToken(token);
+		Integer coupon=tutoring.getCoupon();
+		if(coupon>10) {
+			return DataResult.getSuccessDataResult("1"); 
+		}
+		return DataResult.getSuccessDataResult("0");
+	}
+	
+	
+	
+	
 	@ApiOperation(value = "家教详情")
 	@GetMapping("/queryTutoringDetail")
 	public DataResult<TutoringDetailVO> queryTutoringDetail(@RequestHeader("token")String token,@RequestParam(name="id",required=true)String id) {

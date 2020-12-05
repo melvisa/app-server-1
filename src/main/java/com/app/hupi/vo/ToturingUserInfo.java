@@ -10,7 +10,7 @@ public class ToturingUserInfo {
 	@ApiModelProperty("名字")
 	private String name;
 	@ApiModelProperty("账户余额")
-	private Integer totalAccount;
+	private Double totalAccount;
 	@ApiModelProperty("VIP标识")
 	private String vipTag;
 	@ApiModelProperty("VIP剩余时间天数")

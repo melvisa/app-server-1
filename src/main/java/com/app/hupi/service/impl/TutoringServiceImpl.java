@@ -11,23 +11,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.app.hupi.constant.Constant;
+import com.app.hupi.domain.AccountDetail;
 import com.app.hupi.domain.Appointment;
 import com.app.hupi.domain.Attention;
+import com.app.hupi.domain.Code;
+import com.app.hupi.domain.CouponDetail;
 import com.app.hupi.domain.Demand;
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.domain.TutoringOrder;
 import com.app.hupi.exception.KiteException;
+import com.app.hupi.mapper.AccountDetailMapper;
 import com.app.hupi.mapper.DemandMapper;
 import com.app.hupi.mapper.TutoringMapper;
 import com.app.hupi.mapper.TutoringOrderMapper;
 import com.app.hupi.service.AppointmentService;
 import com.app.hupi.service.AttentionService;
 import com.app.hupi.service.CodeService;
+import com.app.hupi.service.CouponDetailService;
 import com.app.hupi.service.TutoringService;
 import com.app.hupi.util.BeanUtil;
 import com.app.hupi.util.DateUtil;
+import com.app.hupi.util.DoubleUtil;
 import com.app.hupi.util.JsonUtil;
 import com.app.hupi.util.KiteUUID;
+import com.app.hupi.util.ListUtil;
 import com.app.hupi.util.MapUtil;
 import com.app.hupi.util.StringUtil;
 import com.app.hupi.util.WebUtil;
@@ -62,7 +69,10 @@ public class TutoringServiceImpl implements TutoringService {
 	private AttentionService attentionService;
 	@Autowired
 	private AppointmentService appointmentService;
-	
+	@Autowired
+	private CouponDetailService couponDetailService;
+	@Autowired
+	private AccountDetailMapper  accountDetailMapper;
 	/**
 	 * 投递简历
 	 *  1、首先判断是否需要交纳意向金、如果不需要 则直接生成订单
@@ -98,18 +108,29 @@ public class TutoringServiceImpl implements TutoringService {
 			// 先抵扣抵扣券 再抵扣账户余额  再进行支付
 			Tutoring tutoring=tutoringMapper.selectById(tutoringId);
 			int coupon= tutoring.getCoupon();
-			if(coupon>=1000) {
-				coupon=coupon-1000;
+			if(coupon>=10) {
+				coupon=coupon-10;
 				tutoringMapper.updateById(tutoring);
 				tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_DAIQUEREN);
 				tutoringOrder.setPayFlag("0");
 				desc="需要诚意金,已进行抵扣券抵扣";
 				tutoringOrder.setDesc(desc);
+				
+				//代金券明细
+				CouponDetail  couponDetail=new CouponDetail();
+				couponDetail.setId(KiteUUID.getId());
+				couponDetail.setCreateTime(DateUtil.getFormatedDateTime());
+				couponDetail.setDesc("简历投递使用："+demandId);
+				couponDetail.setType("-");
+				couponDetail.setAmount(10);
+				couponDetail.setUserId(tutoring.getId());
+				couponDetailService.addCouponDetail(couponDetail);
+				
 			}
 			else {
-				int totalAccount=tutoring.getTotalAccount();
-				if(totalAccount>=1000) {
-					totalAccount=totalAccount-1000;
+				Double totalAccount=tutoring.getTotalAccount();
+				if(totalAccount>=10) {
+					totalAccount=totalAccount-10;
 					tutoringMapper.updateById(tutoring);
 					tutoringOrder.setStatus(Constant.TUTORING_ORDER_STATUS_DAIQUEREN);
 					tutoringOrder.setPayFlag("0");
@@ -202,6 +223,60 @@ public class TutoringServiceImpl implements TutoringService {
 				vo.setAuthInfo("已实名认证");
 			}
 			//vo.setTutoringIdentity(codeService.queryCodeValueByGroupAndValue("tutoring_identity", vo.getTutoringIdentity()));
+			vo.setTutoringIdentity(MapUtil.getString(map, "tutoringIdentity"));
+			result.add(vo);
+		}
+		// 个性标签  评价   是否关注  是否预约
+		return result;
+	}
+	
+	@Override
+	public List<TutoringListVO> listTutoringListByParams(int pageIndex, int pageSize, Map<String, String> params) {
+		PageHelper.startPage(pageIndex, pageSize);
+		String sqlSelect="id, name ,head_image as headImage , tags ,"
+				+ "tutoring_type as tutoringType , auth_info  as authInfo,"
+				+ "tutoring_identity as tutoringIdentity,"
+				+ "teache_time as teacheTime,sex ,age,lng,lat,cert_flag ";
+		EntityWrapper<Tutoring> wrapper=new EntityWrapper<Tutoring>();
+		wrapper.setSqlSelect(sqlSelect);
+		
+		String classType=MapUtil.getString(params, "classType");
+		String tutoringType=MapUtil.getString(params, "tutoringType");
+		if(tutoringType!=null) {
+			classType=null;
+		}
+		String sex=MapUtil.getString(params, "sex");
+		if(StringUtil.isNotEmpty(sex)) {
+			if("1".equals(sex)) {
+				sex="男";
+			}
+			else if("0".equals(sex)) {
+				sex="女";
+			}
+		}
+		String tutoringIdentity=MapUtil.getString(params, "tutoringIdentity");
+		
+		wrapper.like(StringUtil.isNotEmpty(classType), "class_type",classType);
+		wrapper.like(StringUtil.isNotEmpty(tutoringType), "tutoring_type",tutoringType);
+		wrapper.eq(StringUtil.isNotEmpty(sex), "sex",sex);
+		wrapper.eq(StringUtil.isNotEmpty(tutoringIdentity), "tutoring_identity",tutoringIdentity);
+		
+		List<TutoringListVO> result=new ArrayList<>();
+		List<Map<String, Object>> list=tutoringMapper.selectMaps(wrapper);
+		for(Map<String, Object> map:list) {
+			TutoringListVO vo=MapUtil.mapToBean(map, TutoringListVO.class,"tags");
+			String tags=MapUtil.getString(map, "tags");
+			if(tags!=null) {
+				vo.setTags(Arrays.asList(tags.split(",")));
+			}
+			List<String>subs=changeSubjectList(MapUtil.getString(map, "tutoringType"));
+			vo.setSubjectList(subs);
+			if(vo.getAuthInfo()==null) {
+				vo.setAuthInfo("未实名认证");
+			}
+			else {
+				vo.setAuthInfo("已实名认证");
+			}
 			vo.setTutoringIdentity(MapUtil.getString(map, "tutoringIdentity"));
 			result.add(vo);
 		}
@@ -404,7 +479,86 @@ public class TutoringServiceImpl implements TutoringService {
 		vo.setSubjectList(subs);
 		return vo;
 	}
+
+
+
+	@Override
+	public Tutoring queryOneByYqm(String yqm) {
+			Tutoring tutoring=new Tutoring();
+			tutoring.setYqmSelf(yqm);
+			tutoring=tutoringMapper.selectOne(tutoring);
+			return tutoring;
+		}
+
+
+
+	/**
+	 * tutoringId 支付者ID
+	 */
+	@Override
+	public void updateTutoringAccount(String tutoringId, String money) {
+		Tutoring tutoring=tutoringMapper.selectById(tutoringId);
+		String yqm=tutoring.getYqm();
+		Tutoring tjr=this.queryOneByYqm(yqm);
+		fen(tjr,0,money,tutoring);
+		if(StringUtil.isNotEmpty(tjr.getYqm())) {
+			Tutoring tjr2=this.queryOneByYqm(tjr.getYqm());
+			fen(tjr2,1,money,tutoring);
+			if(StringUtil.isNotEmpty(tjr2.getYqm())) {
+				Tutoring tjr3=this.queryOneByYqm(tjr2.getYqm());
+				fen(tjr3,2,money,tutoring);
+			}
+		}
+		
+		
+	}
 	
 	
+	private void fen(Tutoring tjr,int level,String money,Tutoring tutoring) {
+		int num=queryNum(tjr.getYqmSelf());
+		if(num<10) {
+			return ;
+		}
+		String param="";
+		if(num<100) {
+			param="acount_10";
+		}
+		else if(num<1000) {
+			param="acount_100";
+		}
+		else {
+			param="acount_1000";
+		}
+		List<Code> list=codeService.listCodeByGroup(param);
+		if(ListUtil.isNotEmpty(list)) {
+			Code code=list.get(0);
+			String value=code.getValue();
+			String bili=value.split(",")[level];
+			double d=DoubleUtil.mul(Double.parseDouble(money), Double.parseDouble(bili));
+			tjr.setTotalAccount(tjr.getTotalAccount()+d);
+			tutoringMapper.updateById(tjr);
+			// TODO 账户流水明细
+			AccountDetail accountDetail=new AccountDetail();
+			accountDetail.setId(KiteUUID.getId());
+			accountDetail.setCreateTime(DateUtil.getFormatedDateTime());
+			accountDetail.setMoney(d+"");
+			accountDetail.setType("+");
+			accountDetail.setDesc((level+1)+"级代理佣金分配"+tutoring.getId());
+			accountDetailMapper.insert(accountDetail);
+			
+		}
+	}
 	
+	
+	private  int queryNum(String yqm) {
+		EntityWrapper<Tutoring> wrapper=new EntityWrapper<Tutoring>();
+		wrapper.eq("yqm", yqm).eq("auth_info", "success");
+		return tutoringMapper.selectCount(wrapper);
+	}
 }
+
+
+
+	
+	
+	

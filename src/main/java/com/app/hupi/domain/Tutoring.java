@@ -68,7 +68,7 @@ public class Tutoring {
 	private String bankInfo;
 	@ApiModelProperty("账户余额")
 	@Column(name="total_account",defaultValue="0")
-	private Integer totalAccount;
+	private Double totalAccount;
 	@ApiModelProperty("代金券")
 	@Column(name="coupon",defaultValue="0")
 	private Integer coupon;

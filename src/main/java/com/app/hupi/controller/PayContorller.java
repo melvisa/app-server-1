@@ -38,6 +38,7 @@ import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.app.hupi.constant.DataResult;
 import com.app.hupi.enums.PayWay;
 import com.app.hupi.service.AuthOrderService;
+import com.app.hupi.service.CouponOrderService;
 import com.app.hupi.service.TutoringOrderService;
 import com.app.hupi.service.VipOrderService;
 import com.app.hupi.util.AlipayConfig;
@@ -60,6 +61,9 @@ public class PayContorller {
 	private AuthOrderService authOrderService;
 	@Autowired
 	private TutoringOrderService tutoringOrderService;
+	
+	@Autowired
+	private CouponOrderService  couponOrderService; 
 	
 	 /**
      * 雇主支付雇佣费，支付方：雇主，收款方：工人
@@ -247,6 +251,9 @@ public class PayContorller {
                      else if(out_trade_no.startsWith("TUTOTING")){
                      	tutoringOrderService.afterPayTutoringOrder(out_trade_no, total_fee);
                      }
+                     else  if(out_trade_no.startsWith("COUPON")) {
+                    	 couponOrderService.afterPayUpdate(out_trade_no, total_fee);
+                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -314,7 +321,10 @@ public class PayContorller {
                     	authOrderService.afterPayAutoOrder(out_trade_no, amount);
                     } 
                     else if(out_trade_no.startsWith("TUTOTING")){
-                    	tutoringOrderService.afterPayTutoringOrder(out_trade_no, out_trade_no);
+                    	tutoringOrderService.afterPayTutoringOrder(out_trade_no, amount);
+                    }
+                    else  if(out_trade_no.startsWith("COUPON")) {
+                   	   couponOrderService.afterPayUpdate(out_trade_no, amount);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

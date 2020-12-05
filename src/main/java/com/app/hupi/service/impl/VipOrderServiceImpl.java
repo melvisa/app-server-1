@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.app.hupi.domain.CouponDetail;
 import com.app.hupi.domain.Employer;
 import com.app.hupi.domain.Tutoring;
 import com.app.hupi.domain.Vip;
@@ -11,6 +12,7 @@ import com.app.hupi.domain.VipOrder;
 import com.app.hupi.mapper.TutoringMapper;
 import com.app.hupi.mapper.VipMapper;
 import com.app.hupi.mapper.VipOrderMapper;
+import com.app.hupi.service.CouponDetailService;
 import com.app.hupi.service.EmployerService;
 import com.app.hupi.service.VipOrderService;
 import com.app.hupi.util.DateUtil;
@@ -30,6 +32,8 @@ public class VipOrderServiceImpl implements VipOrderService {
 	private EmployerService employerService;
 	@Autowired
 	private TutoringMapper tutoringMapper;
+	@Autowired
+	private  CouponDetailService  couponDetailService;
 	
 	
 	@Override
@@ -93,6 +97,17 @@ public class VipOrderServiceImpl implements VipOrderService {
 					tutoring.setCoupon(tutoring.getCoupon()+(num*coupon));
 				}
 				tutoringMapper.updateById(tutoring);
+				// 增加代金券明细
+				//代金券明细
+				CouponDetail  couponDetail=new CouponDetail();
+				couponDetail.setId(KiteUUID.getId());
+				couponDetail.setCreateTime(DateUtil.getFormatedDateTime());
+				couponDetail.setDesc("VIP充值赠送："+vipOrderId);
+				couponDetail.setType("+");
+				couponDetail.setAmount((num*coupon));
+				couponDetail.setUserId(tutoring.getId());
+				couponDetailService.addCouponDetail(couponDetail);
+				// 佣金分配
 			}
 		}
 		

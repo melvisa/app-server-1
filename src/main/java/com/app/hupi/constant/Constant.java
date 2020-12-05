@@ -8,9 +8,9 @@ public class Constant {
 	public static  final String DEMAND_STATUS_BEIJIE="2";
 	
 	// 默认头像-家教
-	public static final String DEFAULT_HEAD_IMAGE_TUTOTING="http://liujiancheng.5gzvip.idcfengye.com/1.png";
+	public static final String DEFAULT_HEAD_IMAGE_TUTOTING="http://liujiancheng.5gzvip.idcfengye.com/images/product/1.png";
 	// 默认头像-雇主
-	public static final String DEFAULT_HEAD_IMAGE_EMPLOYER="http://liujiancheng.5gzvip.idcfengye.com/1.png";
+	public static final String DEFAULT_HEAD_IMAGE_EMPLOYER="http://liujiancheng.5gzvip.idcfengye.com/images/product/1.png";
 	
 	public  static final String DEFAULT_MONEY="10";
 	
