@@ -1,6 +1,7 @@
 package com.app.hupi.domain;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
@@ -11,4 +12,6 @@ public class Coupon {
 	private Integer coupon;
 	private String useDesc;
 	private Integer price;
+	@ApiModelProperty("未删除 1 删除")
+	private int isDel;
 }

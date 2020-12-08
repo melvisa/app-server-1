@@ -13,6 +13,8 @@ import com.app.hupi.service.VipService;
 import com.app.hupi.util.BeanUtil;
 import com.app.hupi.vo.VipVO;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.pagination.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 
 @Service
@@ -56,6 +58,36 @@ public class VipServiceImpl implements VipService {
 		String desc=vip.getDetailsDesc();
 		vipVO.setDetailsDesc(Arrays.asList(desc.split("//")));
 		return vipVO;
+	}
+
+	@Override
+	public PageInfo<VipVO> pageInfoVip(int pageNum, int pageSize, String type) {
+		PageHelper.startPage(pageNum, pageSize);
+		EntityWrapper<Vip> wrapper=new EntityWrapper<>();
+		wrapper.eq("is_del", 0).orderBy("present_price");
+		if(type!=null) {
+			wrapper.eq("type", type);
+		}
+		List<Vip> vipList=vipMapper.selectList(wrapper);
+		PageInfo<Vip> info=new PageInfo<Vip>(vipList);
+		PageInfo<VipVO> page=new PageInfo<VipVO>();
+		BeanUtil.copyProperties(info, page);
+		List<VipVO>  list=new ArrayList<>();
+		for(Vip  vip:vipList) {
+			VipVO vipVO=new VipVO();
+			BeanUtil.copyProperties(vip, vipVO);
+			String desc=vip.getDetailsDesc();
+			vipVO.setDetailsDesc(Arrays.asList(desc.split("//")));
+			list.add(vipVO);
+		}
+		page.setList(list);
+		return page;
+	}
+
+	@Override
+	public int addVip(Vip vip) {
+		// TODO Auto-generated method stub
+		return vipMapper.insert(vip);
 	}
 
 }

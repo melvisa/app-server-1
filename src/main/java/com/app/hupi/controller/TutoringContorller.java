@@ -67,29 +67,8 @@ public class TutoringContorller {
 	private TutoringOrderService tutoringOrderService;
 	@Autowired
 	private TutoringOrderMapper tutoringOrderMapper;
-	@Autowired
-	private CommentService  commentService;
-	
-	@ApiOperation(value = "分页查询家教评论")
-	@GetMapping("/pageComment")
-	public DataResult<PageInfo<CommentVo>> pageComment(int pageNum,int pageSize,String id) {
-		return DataResult.getSuccessDataResult(commentService.
-				pageInfo(id, pageNum, pageSize));
-	}
-	@ApiOperation(value = "分页查询家教列表")
-	@GetMapping("pageTutoring")
-	public DataResult<PageInfo<SimpleTutoring>> pageTutoring(int pageNum,int pageSize,String   number ,String name) {
-		PageInfo<SimpleTutoring> pageInfo=tutoringService.pageInfo(pageNum, pageSize, name, number);
-		return  DataResult.getSuccessDataResult(pageInfo);
-	}
-	
-	@ApiOperation(value = "管理后台查询家教详情")
-	@GetMapping("/queryTutoringDetailCms")
-	public DataResult<TutoringDetailCmsVo> queryTutoringDetailCms(@RequestParam(name="id",required=true)String id) {
-		TutoringDetailCmsVo tutoring=tutoringService.queryTutoringDetailCmsVo(id);
-		return DataResult.getSuccessDataResult(tutoring);
-	}
-	
+
+
 	
 	
 	@ApiOperation(value = "银行卡绑定")

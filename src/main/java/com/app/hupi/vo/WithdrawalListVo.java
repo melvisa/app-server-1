@@ -1,13 +1,16 @@
-package com.app.hupi.domain;
+package com.app.hupi.vo;
 
 import lombok.Data;
 
+
 @Data
-public class Withdrawal {
+public class WithdrawalListVo {
 	private String id;
 	private String userId;
 	private Integer money;
 	private String createTime;
-	private String bankInfo;
 	private String status;
+	private String cardNo;
+	private String bankName;
+	private String cardName;
 }

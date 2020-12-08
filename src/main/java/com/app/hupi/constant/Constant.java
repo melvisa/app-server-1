@@ -3,6 +3,12 @@ package com.app.hupi.constant;
 public class Constant {
 	
 	
+	public static final  String WITHDRAWAL_STATUS_DSH="0";
+	
+	public static final  String WITHDRAWAL_STATUS_SHTG="1";
+	
+	public static final  String WITHDRAWAL_STATUS_SHSB="2";
+	
 	public static  final String DEMAND_STATUS_ZHENGCHENG="1";
 	
 	public static  final String DEMAND_STATUS_BEIJIE="2";

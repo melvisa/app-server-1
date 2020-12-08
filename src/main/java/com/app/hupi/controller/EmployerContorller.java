@@ -39,15 +39,7 @@ public class EmployerContorller {
 	@Autowired
 	private  AttentionService attentionService;
 	
-	
-	@ApiOperation(value = "分页查询雇主列表")
-	@PostMapping("/pageInfo")
-	public DataResult<PageInfo<EmployerCmsVo>> pageInfo(int pageNum,int pageSize,String name,String number) {
-		PageInfo<EmployerCmsVo> pageInfo=employerService.pageInfo(pageNum, pageSize, name, number);
-		return DataResult.getSuccessDataResult(pageInfo);
-	}
-	
-	
+
 	
 	
 	@ApiOperation(value = "雇员注册")
