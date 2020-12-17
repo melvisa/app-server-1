@@ -31,6 +31,8 @@ public class Demand {
 	private String salary;
 	@ApiModelProperty(value="是否需要诚意金 1 是 0 否",required=true)
 	private String earnestFlag;
+	@ApiModelProperty(value="授课方式")
+	private String teachType;
 	private String createTime;
 	@ApiModelProperty("经度")
 	private String lng;

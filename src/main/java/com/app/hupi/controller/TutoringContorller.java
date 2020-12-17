@@ -126,18 +126,18 @@ public class TutoringContorller {
 	@ApiOperation(value = "条件查询家教列表")
 	@GetMapping("/listTutoringListByParams")
 	 @ApiImplicitParams({
-		    @ApiImplicitParam(name = "classType", value = "家教类型", dataType = "String"),
-		    @ApiImplicitParam(name = "tutoringType", value = "家教类型", dataType = "String"),
-		    @ApiImplicitParam(name = "tutoringIdentity", value = "家教类型", dataType = "String"),
-		    @ApiImplicitParam(name = "sex", value = "性别", dataType = "String"),
+		    @ApiImplicitParam(name = "classType", value = "家教类型",required = false, dataType = "String"),
+		    @ApiImplicitParam(name = "tutoringType", value = "家教类型", required = false, dataType = "String"),
+		    @ApiImplicitParam(name = "tutoringIdentity", value = "家教类型",required = false,  dataType = "String"),
+		    @ApiImplicitParam(name = "sex", value = "性别", required = false, dataType = "String"),
 	        @ApiImplicitParam(name = "pageNum", value = "第几页", required = true, dataType = "int"),
 	        @ApiImplicitParam(name = "pageSize", value = "每页记录数", required = true, dataType = "int")
 	 })
 	public DataResult<List<TutoringListVO>> listTutoringListByParams(
-			@RequestParam(name="classType")String classType,
-			@RequestParam(name="tutoringType")String tutoringType,
-			@RequestParam(name="tutoringIdentity")String tutoringIdentity,
-			@RequestParam(name="sex")String sex,
+			@RequestParam(name="classType",required = false)String classType,
+			@RequestParam(name="tutoringType",required = false)String tutoringType,
+			@RequestParam(name="tutoringIdentity",required = false)String tutoringIdentity,
+			@RequestParam(name="sex",required = false)String sex,
 			@RequestParam(name="pageNum",required=true)int pageNum,
 			@RequestParam(name="pageSize",required=true)int pageSize) {
 		

@@ -29,4 +29,6 @@ public class DemandAddVO {
 	private String salary;
 	@ApiModelProperty(value="是否需要诚意金 直接传是或者否",required=true)
 	private String earnestFlag;
+	@ApiModelProperty(value="授课方式")
+	private String teachType;
 }
