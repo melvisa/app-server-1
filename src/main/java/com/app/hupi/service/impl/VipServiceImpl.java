@@ -11,6 +11,7 @@ import com.app.hupi.domain.Vip;
 import com.app.hupi.mapper.VipMapper;
 import com.app.hupi.service.VipService;
 import com.app.hupi.util.BeanUtil;
+import com.app.hupi.util.StringUtil;
 import com.app.hupi.vo.VipVO;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.pagination.PageHelper;
@@ -65,7 +66,7 @@ public class VipServiceImpl implements VipService {
 		PageHelper.startPage(pageNum, pageSize);
 		EntityWrapper<Vip> wrapper=new EntityWrapper<>();
 		wrapper.eq("is_del", 0).orderBy("present_price");
-		if(type!=null) {
+		if(StringUtil.isNotEmpty(type)) {
 			wrapper.eq("type", type);
 		}
 		List<Vip> vipList=vipMapper.selectList(wrapper);
