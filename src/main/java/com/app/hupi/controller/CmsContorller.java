@@ -110,7 +110,7 @@ public class CmsContorller {
 	}
 	
 	@ApiOperation(value = "VIP模块-新增")
-	@GetMapping("/vip-vipAdd")
+	@PostMapping("/vip-vipAdd")
 	public DataResult<String> vipAdd(@RequestBody VipAddVo  vipAddVo) {
          Vip  vi=new  Vip();
 		 vi=BeanUtil.transform(vipAddVo, vi.getClass());
