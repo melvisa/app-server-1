@@ -115,7 +115,7 @@ public class CmsContorller {
          Vip  vi=new  Vip();
 		 vi=BeanUtil.transform(vipAddVo, vi.getClass());
 		 vi.setId(KiteUUID.getId());
-		 vi.setIsDel(1);
+		 vi.setIsDel(0);
 		 int i = vipService.addVip(vi);
 		 return DataResult.getSuccessDataResult(i+"");
 	}
